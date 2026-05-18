@@ -18,7 +18,7 @@ export const GlobalMetrics = async () => {
     const othersDominance = (100 - btcDominance - ethDominance).toFixed(1);
     const { daysLeft, progressPercent } = getHalvingData();
 
-    console.log(fearAndGreedData)
+    // console.log(fearAndGreedData)
 
     return (
         <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
@@ -95,9 +95,10 @@ export const GlobalMetrics = async () => {
                     <span className="font-headline text-xl font-bold">{daysLeft}</span>
                     <span className="text-xs text-on-surface-variant">Days Left</span>
                 </div>
-                <div className="w-full bg-surface-container-lowest h-1.5 rounded-full mt-2 overflow-hidden">
+                <div className="w-full bg-surface-container-lowest h-1.5 rounded-full mt-2 mb-1 overflow-hidden">
                     <div className="bg-tertiary h-full shadow-[0_0_8px_rgba(172,137,255,0.5)]" style={{ width: `${progressPercent.toFixed(2)}%` }}></div>
                 </div>
+                <span className="text-[10px] font-label text-on-surface-variant pt-4">*Bitcoin halving is expected to occur in April 2028</span>
             </div>
             <div className="bg-surface-container-low p-4 rounded-xl">
 

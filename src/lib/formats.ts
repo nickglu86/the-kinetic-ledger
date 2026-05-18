@@ -22,3 +22,13 @@ export const formatPrice = (price:number) => {
               ? price.toFixed(2)
               : price.toFixed(Math.floor(Math.log10(price)) * -1 + 3)
 }
+
+
+export const formatPercent = (value: number | null | undefined): string => {
+  if (value === null || value === undefined) return "—"
+  return `${value > 0 ? "+" : ""}${value.toFixed(2)}%`
+}
+
+export const isPositive = (value: number | null | undefined): boolean => {
+  return typeof value === "number" && value >= 0
+}
