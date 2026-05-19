@@ -4,7 +4,7 @@ export const Footer = () => (
             <div className="space-y-6">
                 <div className="text-xl font-black text-primary tracking-tighter uppercase font-headline">The Kinetic Ledger
                 </div>
-                <p className="text-on-surface-variant text-sm font-body max-w-xs">Providing the world's most high-velocity
+                <p className="text-on-surface-variant text-sm font-body max-w-xs">Providing the world&#39;s most high-velocity
                     crypto intelligence and market data since 2018.</p>
             </div>
             <div>

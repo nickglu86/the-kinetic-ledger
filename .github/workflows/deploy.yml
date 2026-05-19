@@ -10,5 +10,14 @@ jobs:
       - name: Checkout repo
         uses: actions/checkout@v4
 
-      - name: Say hello
-        run: echo "hello world"
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with: 
+          node-version: '20'
+          cache: 'npm'
+      
+      - name: Insall dependencies
+        run: npm ci
+
+      - name: Lint
+        run: npm run lint
