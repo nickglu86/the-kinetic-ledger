@@ -24,3 +24,10 @@ jobs:
 
       - name: Build 
         run: npm run build
+
+  deploy:
+    needs: quality
+    runs-on: ubuntu-latest
+    steps:
+      - name: Placeholder
+        run: echo "deploy job will go here in commit #5"
