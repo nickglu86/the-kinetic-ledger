@@ -30,4 +30,4 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Placeholder
-        run: echo "deploy job will go here in commit #5"
+        run: echo "deploy job will go here in commit number 5"
