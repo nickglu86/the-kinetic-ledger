@@ -1,8 +1,9 @@
 export const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
 
 export const ENDPOINTS = {
-    coinsMarket: (perPage = 23) =>
-        `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=1&sparkline=false&price_change_percentage=1h%2C7d%2C30d&locale=en`,
+    // sparkline=true adds 7 days of hourly prices per coin (~4x bigger response). Only the Markets page needs it.
+    coinsMarket: (perPage = 23, sparkline = false) =>
+        `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=1&sparkline=${sparkline}&price_change_percentage=1h%2C7d%2C30d&locale=en`,
     global: `${COINGECKO_BASE_URL}/global`,
     trending: `${COINGECKO_BASE_URL}/search/trending`,
     fearAndGreed: "https://api.alternative.me/fng/?limit=14",

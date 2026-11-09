@@ -73,9 +73,13 @@ export const MarketTable = async () => {
         <h2 className="font-headline font-extrabold text-3xl tracking-tighter uppercase">
           Market Rankings
         </h2>
-        <span className="font-label text-primary text-xs font-bold tracking-widest uppercase">
-          Top 10 Assets
-        </span>
+        <Link
+          href="/markets"
+          className="inline-flex items-center gap-1 font-label text-primary text-xs font-bold tracking-widest uppercase hover:underline"
+        >
+          All coins
+          <span aria-hidden className="material-symbols-outlined text-sm">arrow_forward</span>
+        </Link>
       </div>
       {!coins ? (
         <Unavailable className="py-10 items-center" />

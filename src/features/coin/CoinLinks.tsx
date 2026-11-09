@@ -1,3 +1,4 @@
+import { safeUrl } from "@/lib/safeUrl";
 import { CoinDetail } from "./types";
 
 interface LinkItem {
@@ -5,17 +6,7 @@ interface LinkItem {
   label: string;
 }
 
-// Links come from CoinGecko, i.e. third-party data. Only allow real http(s) URLs,
-// so a "javascript:..." value can never end up in an href.
-const safeUrl = (value: string | null | undefined): string | null => {
-  if (!value) return null;
-  try {
-    const url = new URL(value);
-    return url.protocol === "https:" || url.protocol === "http:" ? url.toString() : null;
-  } catch {
-    return null;
-  }
-};
+// Links come from CoinGecko, i.e. third-party data, so every URL goes through safeUrl (http/https only).
 
 const hostLabel = (href: string) => new URL(href).hostname.replace(/^www\./, "");
 

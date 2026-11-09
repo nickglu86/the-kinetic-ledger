@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useState } from "react";
 import { NewsArticle } from "@/types/api";
 import { cn } from "@/lib/utils";
@@ -18,7 +19,13 @@ export const NewsHeroClient = ({ sources }: NewsHeroClientProps) => {
     return (
         <section className="space-y-6">
             <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-outline-variant/10 pb-4 gap-4">
-                <h2 className="font-headline font-extrabold text-3xl tracking-tighter uppercase italic">The Terminal</h2>
+                <div className="flex items-baseline gap-4">
+                    <h2 className="font-headline font-extrabold text-3xl tracking-tighter uppercase italic">The Terminal</h2>
+                    <Link href="/news" className="inline-flex items-center gap-1 font-label text-primary text-xs font-bold tracking-widest uppercase hover:underline">
+                        All news
+                        <span aria-hidden className="material-symbols-outlined text-sm">arrow_forward</span>
+                    </Link>
+                </div>
                 <div className="flex items-center gap-3  mr-3">
                     <span className="text-[10px] font-label text-on-surface-variant uppercase tracking-widest">Source:</span>
                     <div className="flex gap-2 bg-surface-container-low p-1 rounded-lg">

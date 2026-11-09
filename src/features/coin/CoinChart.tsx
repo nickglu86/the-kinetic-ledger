@@ -16,17 +16,9 @@ import {
 import { cn } from "@/lib/utils";
 import { formatMarketCap, formatPrice } from "@/lib/formats";
 import { PercentChange } from "@/components/ui/PercentChange";
+import { CHART_COLORS as COLORS } from "@/lib/chartTheme";
 import { CHART_RANGES, DEFAULT_CHART_DAYS, type ChartDays } from "./chartRanges";
 import type { ChartPoint, CoinChartData } from "./types";
-
-// The chart draws on a <canvas>, so it can't use Tailwind classes. These mirror the theme in globals.css.
-const COLORS = {
-  up: "#00FFA3", // primary
-  down: "#ff716c", // error
-  text: "#a9abaf", // on-surface-variant
-  grid: "#45484c33", // outline-variant, faded
-  volume: "#45484c99",
-};
 
 const fetcher = async (url: string): Promise<CoinChartData> => {
   const res = await fetch(url);

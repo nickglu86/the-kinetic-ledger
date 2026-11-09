@@ -1,3 +1,4 @@
+import Link from "next/link"
 import { ENDPOINTS } from "@/lib/endpoints"
 import { safeFetch } from "@/lib/fetcher"
 import { Category, TrendingResponse } from "@/types/api"
@@ -32,7 +33,10 @@ export const TrendingSectors = async () => {
                     <span className="w-1 h-6 bg-secondary"></span>
                     Trending Sectors
                 </h2>
-                <button className="text-secondary text-xs font-label uppercase tracking-widest hover:underline">View Heatmap</button>
+                <Link href="/rankings" className="inline-flex items-center gap-1 text-secondary text-xs font-label uppercase tracking-widest hover:underline">
+                    All sectors
+                    <span aria-hidden className="material-symbols-outlined text-sm">arrow_forward</span>
+                </Link>
             </div>
             <div className="grid grid-cols-2 sm:grid-cols-4 lg:grid-cols-6 gap-3 overflow-x-auto pb-2">
                 {categories.map(
