@@ -22,7 +22,12 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "The Kinetic Ledger",
+  // Pages set just their own part ("Bitcoin (BTC) Price"); %s is replaced with it.
+  // Pages without a title (home) get the default.
+  title: {
+    template: "%s | The Kinetic Ledger",
+    default: "The Kinetic Ledger",
+  },
   description: "High-Velocity Crypto Intelligence & Market Data",
 };
 

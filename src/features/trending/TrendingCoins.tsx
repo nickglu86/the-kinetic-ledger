@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { safeFetch } from "@/lib/fetcher";
 import { formatPrice } from "@/lib/formats";
@@ -26,10 +27,11 @@ export const TrendingCoins = async () => {
             <div className="space-y-4">
                 {coins.slice(0, 10).map(
                     (coin) => (
-                        <div key={coin.item.id} className="flex  justify-between group cursor-pointer">
+                        <Link key={coin.item.id} href={`/coins/${coin.item.id}`} className="flex  justify-between group">
                             <div className="flex items-center  gap-3 w-50">
                                 <span className="text-on-surface-variant font-label text-[12px] w-5">{coin.item.market_cap_rank}</span>
                                 <img src={coin.item.thumb}
+                                    alt=""
                                     className="w-5 h-5 rounded-full  flex items-center justify-center font-bold text-white text-xs"
                                 />
                                 <div className="text-left">
@@ -49,7 +51,7 @@ export const TrendingCoins = async () => {
                                     <PercentChange value={coin.item.data.price_change_percentage_24h?.usd} />
                                 </p>
                             </div>
-                        </div>
+                        </Link>
                     )
                 )}
 

@@ -7,6 +7,9 @@ export const ENDPOINTS = {
     trending: `${COINGECKO_BASE_URL}/search/trending`,
     fearAndGreed: "https://api.alternative.me/fng/?limit=14",
     categories: `${COINGECKO_BASE_URL}/coins/categories`,
+    // id comes from the page URL, so encode it. The =false flags drop large unused parts of the response.
+    coinDetail: (id: string) =>
+        `${COINGECKO_BASE_URL}/coins/${encodeURIComponent(id)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`,
     rss: {
         coindesk: "https://www.coindesk.com/arc/outboundfeeds/rss/",
         cointelegraph: "https://cointelegraph.com/rss",

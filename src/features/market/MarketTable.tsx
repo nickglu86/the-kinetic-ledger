@@ -1,3 +1,4 @@
+import Link from "next/link";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { safeFetch } from "@/lib/fetcher";
 import { formatMarketCap, formatPrice } from "@/lib/formats";
@@ -19,26 +20,28 @@ export const MarketTable = async () => {
     return (
       <tr
         key={id}
-        className="bg-surface-container-low hover:bg-surface-container-high transition-colors group cursor-pointer"
+        className="bg-surface-container-low hover:bg-surface-container-high transition-colors group"
       >
         <td className="py-4 pl-4 rounded-l-lg font-headline font-bold text-on-surface-variant">
           {market_cap_rank}
         </td>
         <td className="py-4">
-          <div className="flex items-center gap-3">
+          {/* A <tr> can't be wrapped in a link, so the asset cell is the link to the coin page */}
+          <Link href={`/coins/${id}`} className="flex items-center gap-3 w-fit">
             <img
               src={image}
+              alt=""
               className="w-8 h-8 rounded-full  flex items-center justify-center font-bold text-white text-xs"
             />
             <div>
-              <div className="font-headline font-bold text-on-surface">
+              <div className="font-headline font-bold text-on-surface group-hover:text-secondary transition-colors">
                 {name}
               </div>
               <div className="text-[10px] font-label text-on-surface-variant uppercase tracking-tighter">
                 {symbol}
               </div>
             </div>
-          </div>
+          </Link>
         </td>
         <td className="py-4 font-headline font-bold">
           ${current_price}

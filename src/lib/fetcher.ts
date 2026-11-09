@@ -25,6 +25,18 @@ const redactUrl = (url: string): string => {
   }
 };
 
+// Error that remembers the HTTP status, so callers can tell "doesn't exist" (404)
+// apart from real failures like rate limits (429) or outages (5xx).
+export class FetchError extends Error {
+  readonly status: number;
+
+  constructor(message: string, status: number) {
+    super(message);
+    this.name = "FetchError";
+    this.status = status;
+  }
+}
+
 export const fetchData = async <T>(
   url: string,
   revalidate?: number,
@@ -47,7 +59,7 @@ export const fetchData = async <T>(
       body: body.slice(0, 500),
       elapsedMs: Date.now() - start,
     });
-    throw new Error(`Fetch failed ${response.status}: ${safeUrl}`);
+    throw new FetchError(`Fetch failed ${response.status}: ${safeUrl}`, response.status);
   }
 
   return response.json();
