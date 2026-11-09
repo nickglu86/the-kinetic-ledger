@@ -1,16 +1,24 @@
-import { ENDPOINTS, YOUTUBE_CHANNELS } from "@/lib/endpoints"
-import { safeFetch } from "@/lib/fetcher"
-import { YouTubeResponse, YouTubeVideo } from "@/types/api"
+import { YouTubeVideo } from "@/types/api"
+import { getVideos } from "@/server/data/videos"
 import { KineticBroadcastClient } from "./KineticBroadcastClient"
 
+const VIDEOS_PER_CHANNEL = 3
+
 export const KineticBroadcast = async () => {
-    const channelIds = Object.values(YOUTUBE_CHANNELS)
+    const { videos } = await getVideos(VIDEOS_PER_CHANNEL)
 
-    const responses = await Promise.all(
-        channelIds.map((id) => safeFetch<YouTubeResponse>(ENDPOINTS.youtube(id)))
-    )
+    // The home client component uses the YouTubeVideo shape; convert the shared VideoItem to it.
+    const items: YouTubeVideo[] = videos.map((video) => ({
+        id: { videoId: video.id },
+        snippet: {
+            title: video.title,
+            description: video.description,
+            thumbnails: { high: { url: video.thumbnail } },
+            channelTitle: video.channelTitle,
+            channelAvatar: video.channelAvatar,
+            publishedAt: video.publishedAt,
+        },
+    }))
 
-    const videos: YouTubeVideo[] = responses.flatMap((res) => res?.items ?? [])
-
-    return <KineticBroadcastClient videos={videos} />
+    return <KineticBroadcastClient videos={items} />
 }

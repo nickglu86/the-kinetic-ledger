@@ -9,6 +9,7 @@ const MOBILE_NAV_ITEMS = [
     { label: "Markets", href: "/markets", icon: "monitoring" },
     { label: "Rank", href: "/rankings", icon: "trending_up" },
     { label: "News", href: "/news", icon: "newspaper" },
+    { label: "Videos", href: "/videos", icon: "smart_display" },
 ] as const;
 
 export const MobileNav = () => {

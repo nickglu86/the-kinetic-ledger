@@ -113,10 +113,34 @@ export interface YouTubeVideo {
         description: string
         thumbnails: { high: { url: string } }
         channelTitle: string
+        /** Channel logo URL, when the channels request succeeded. */
+        channelAvatar?: string
         publishedAt: string
     }
 }
 
-export interface YouTubeResponse {
-    items: YouTubeVideo[]
+// playlistItems.list response (channel uploads playlist)
+export interface YouTubePlaylistResponse {
+    items: YouTubePlaylistItem[]
+}
+
+export interface YouTubePlaylistItem {
+    snippet: {
+        title: string
+        description: string
+        // Missing for private/deleted videos that are still listed in the playlist
+        thumbnails: { high?: { url: string } }
+        channelId: string
+        channelTitle: string
+        publishedAt: string
+        resourceId: { videoId: string }
+    }
+}
+
+// channels.list response: used for the channel logos
+export interface YouTubeChannelsResponse {
+    items: {
+        id: string
+        snippet: { thumbnails: { default?: { url: string } } }
+    }[]
 }

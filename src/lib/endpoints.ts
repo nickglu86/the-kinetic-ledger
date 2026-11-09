@@ -20,8 +20,14 @@ export const ENDPOINTS = {
         cointelegraph: "https://cointelegraph.com/rss",
         decrypt: "https://decrypt.co/feed",
     },
+    // A channel's long-form uploads, newest first: no Shorts and no live streams.
+    // "UULF" + the channel id without its "UC" prefix is YouTube's videos-only uploads playlist
+    // (Shorts live in "UUSH..."). Costs 1 quota unit per call, vs 100 for the search endpoint.
     youtube: (channelId: string, maxResults = 3) =>
-        `https://www.googleapis.com/youtube/v3/search?key=${process.env.YOUTUBE_API_KEY}&channelId=${channelId}&part=snippet&maxResults=${maxResults}&order=date&type=video`,
+        `https://www.googleapis.com/youtube/v3/playlistItems?key=${process.env.YOUTUBE_API_KEY}&playlistId=UULF${channelId.slice(2)}&part=snippet&maxResults=${maxResults}`,
+    // Name + logo of several channels in one call (1 quota unit).
+    youtubeChannels: (channelIds: string[]) =>
+        `https://www.googleapis.com/youtube/v3/channels?key=${process.env.YOUTUBE_API_KEY}&id=${channelIds.join(",")}&part=snippet`,
 
 }
 
