@@ -10,6 +10,21 @@ const getHeaders = (url: string): HeadersInit | undefined => {
   return undefined;
 };
 
+// Masks secrets passed as query params (e.g. YouTube's ?key=) so URLs are safe to log.
+const SECRET_PARAMS = ["key", "x_cg_demo_api_key"];
+
+const redactUrl = (url: string): string => {
+  try {
+    const parsed = new URL(url);
+    for (const param of SECRET_PARAMS) {
+      if (parsed.searchParams.has(param)) parsed.searchParams.set(param, "***");
+    }
+    return parsed.toString();
+  } catch {
+    return "<invalid url>";
+  }
+};
+
 export const fetchData = async <T>(
   url: string,
   revalidate?: number,
@@ -23,15 +38,16 @@ export const fetchData = async <T>(
   if (!response.ok) {
     const body = await response.text().catch(() => "<no body>");
     const retryAfter = response.headers.get("retry-after");
+    const safeUrl = redactUrl(url);
     console.error("[fetchData] FAIL", {
-      url,
+      url: safeUrl,
       status: response.status,
       statusText: response.statusText,
       retryAfter,
       body: body.slice(0, 500),
       elapsedMs: Date.now() - start,
     });
-    throw new Error(`Fetch failed ${response.status}: ${url}`);
+    throw new Error(`Fetch failed ${response.status}: ${safeUrl}`);
   }
 
   return response.json();
