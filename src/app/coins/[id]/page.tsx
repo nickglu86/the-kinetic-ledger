@@ -2,6 +2,8 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { getCoin } from "@/server/data/coin";
 import { CoinHeader } from "@/features/coin/CoinHeader";
+import { CoinPerformance } from "@/features/coin/CoinPerformance";
+import { CoinStats } from "@/features/coin/CoinStats";
 
 // Dynamic route: /coins/bitcoin, /coins/ethereum, ...
 // The folder name [id] becomes params.id. It's the CoinGecko coin id (e.g. "bitcoin"), not the symbol.
@@ -36,6 +38,8 @@ export default async function CoinPage({ params }: PageProps<"/coins/[id]">) {
   return (
     <main className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 space-y-12">
       <CoinHeader coin={coin} />
+      <CoinPerformance coin={coin} />
+      <CoinStats coin={coin} />
     </main>
   );
 }

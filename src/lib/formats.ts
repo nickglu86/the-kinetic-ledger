@@ -15,6 +15,8 @@ export const formatMarketCap = (marketCap: number):string => {
 
 // Price Coin Price for Display
 export const formatPrice = (price:number) => {
+      // Math.log10(0) is -Infinity, which made toFixed() throw for 0 (and NaN for negatives)
+      if (!Number.isFinite(price) || price <= 0) return "0.00"
       return  price > 10
               ? price.toLocaleString(undefined,
                 {'minimumFractionDigits':2,'maximumFractionDigits':2})

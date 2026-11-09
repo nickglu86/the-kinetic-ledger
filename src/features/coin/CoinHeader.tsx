@@ -43,7 +43,7 @@ export const CoinHeader = ({ coin }: { coin: CoinDetail }) => {
             Price (USD)
           </p>
           <p className="font-headline font-bold text-4xl tracking-tight text-on-surface">
-            {/* formatPrice can't handle 0 or missing prices (log10), so guard here */}
+            {/* No price data: show a dash rather than "$0.00" */}
             {price && price > 0 ? `$${formatPrice(price)}` : "—"}
           </p>
           <p className="text-sm">
