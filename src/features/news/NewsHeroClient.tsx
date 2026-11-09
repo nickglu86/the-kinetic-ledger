@@ -18,10 +18,10 @@ export const NewsHeroClient = ({ sources }: NewsHeroClientProps) => {
 
     return (
         <section className="space-y-6">
-            <div className="flex flex-col md:flex-row md:items-center justify-between border-b border-outline-variant/10 pb-4 gap-4">
+            <div className="flex flex-col lg:flex-row lg:items-center justify-between border-b border-outline-variant/10 pb-4 gap-4">
                 <div className="flex items-baseline gap-4">
                     <h2 className="font-headline font-extrabold text-3xl tracking-tighter uppercase italic">The Terminal</h2>
-                    <Link href="/news" className="inline-flex items-center gap-1 font-label text-primary text-xs font-bold tracking-widest uppercase hover:underline">
+                    <Link href="/news" className="inline-flex items-center gap-1 whitespace-nowrap font-label text-primary text-xs font-bold tracking-widest uppercase hover:underline">
                         All news
                         <span aria-hidden className="material-symbols-outlined text-sm">arrow_forward</span>
                     </Link>

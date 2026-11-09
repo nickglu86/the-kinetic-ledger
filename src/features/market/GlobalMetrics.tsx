@@ -1,138 +1,167 @@
-import { safeFetch } from "@/lib/fetcher"
-import { ENDPOINTS } from "@/lib/endpoints"
-import { FearAndGreedResponse, GlobalData, GlobalResponse } from "@/types/api";
+import { safeFetch } from "@/lib/fetcher";
+import { ENDPOINTS } from "@/lib/endpoints";
+import { formatMarketCap } from "@/lib/formats";
 import { getHalvingData } from "@/lib/utils";
-import { PercentChange } from "@/components/ui/PercentChange";
+import { getMarketsData } from "@/server/data/markets";
+import { FearAndGreedResponse, GlobalResponse } from "@/types/api";
+import { ChangePill } from "@/components/ui/ChangePill";
 import { Unavailable } from "@/components/ui/Unavailable";
-import { FearGreedGauge } from "./FearGreedGauge";
+import { FearGreedGauge, sentimentColor } from "./FearGreedGauge";
+import { MetricCard } from "./metrics/MetricCard";
+import { Ring } from "./metrics/Ring";
+import { Sparkline } from "./metrics/Sparkline";
 
-const getMarketMetrics = (globalData: GlobalData) => {
-    const btcDominance = Number(globalData.market_cap_percentage.btc.toFixed(1));
-    const ethDominance = Number(globalData.market_cap_percentage.eth.toFixed(1));
-    return {
-        totalMarketCap: (globalData.total_market_cap.usd / 1000000000000).toFixed(2),
-        marketCapDailyChange: globalData.market_cap_change_percentage_24h_usd,
-        btcDominance,
-        ethDominance,
-        othersDominance: (100 - btcDominance - ethDominance).toFixed(1),
-    };
-};
+const BTC_COLOR = "#f7931a";
+const ETH_COLOR = "#627eea";
+const OTHERS_COLOR = "#45484c"; // outline-variant
+const HALVING_COLOR = "#ac89ff"; // tertiary
+const UP_COLOR = "#00FFA3";
+const DOWN_COLOR = "#ff716c";
+
+// Block reward now and after the next halving
+const REWARD_NOW = 3.125;
+
+const LegendRow = ({ color, label, value, muted }: { color: string; label: string; value: string; muted?: boolean }) => (
+  <div className={muted ? "flex items-center justify-between gap-3 text-on-surface-variant" : "flex items-center justify-between gap-3"}>
+    <span className="flex items-center gap-1.5">
+      <span aria-hidden className="size-2 rounded-full" style={{ backgroundColor: color }} />
+      {label}
+    </span>
+    <span className="font-headline font-bold">{value}</span>
+  </div>
+);
 
 export const GlobalMetrics = async () => {
-    // Fetched in parallel; each returns null on failure so the cards degrade independently.
-    const [globalRes, fearAndGreedRes] = await Promise.all([
-        safeFetch<GlobalResponse>(ENDPOINTS.global),
-        safeFetch<FearAndGreedResponse>(ENDPOINTS.fearAndGreed),
-    ]);
+  // Fetched in parallel; each one can fail on its own and only its card shows "unavailable".
+  // getMarketsData is the same request the Markets page makes, so they share one cache entry.
+  const [globalRes, fearAndGreedRes, markets] = await Promise.all([
+    safeFetch<GlobalResponse>(ENDPOINTS.global),
+    safeFetch<FearAndGreedResponse>(ENDPOINTS.fearAndGreed),
+    getMarketsData(),
+  ]);
 
-    const metrics = globalRes?.data ? getMarketMetrics(globalRes.data) : null;
-    const fearAndGreedToday = fearAndGreedRes?.data?.[0] ?? null;
-    const { daysLeft, progressPercent } = getHalvingData();
+  const global = globalRes?.data ?? null;
+  const fng = fearAndGreedRes?.data ?? [];
+  const { daysLeft, progressPercent } = getHalvingData();
 
-    // console.log(fearAndGreedData)
+  const btc = global?.market_cap_percentage.btc ?? 0;
+  const eth = global?.market_cap_percentage.eth ?? 0;
+  const others = Math.max(0, 100 - btc - eth);
 
-    return (
-        <section className="grid grid-cols-1 md:grid-cols-4 gap-4">
-            {metrics ? (
-            <>
-            <div className="bg-surface-container-low p-4 rounded-xl flex items-center justify-between group hover:bg-surface-container-high transition-all">
-                <div className="flex flex-col ">
-                    <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">Total Market Cap</p>
-                    <h3 className="font-headline text-xl font-bold text-primary mt-3">${metrics.totalMarketCap}T</h3>
-                    <span className="text-[12px] mt-1">
-                        <span className="text-on-surface-variant font-normal mr-1">24h</span>
-                        <PercentChange value={metrics.marketCapDailyChange} />
-                    </span>
-                </div>
-                <div className="w-16 h-8 bg-primary/10 rounded flex items-end px-1 pb-1">
-                    <div className="flex gap-0.5 items-end w-full h-full">
-                        <div className="bg-primary w-full h-[40%]"></div>
-                        <div className="bg-primary w-full h-[60%]"></div>
-                        <div className="bg-primary w-full h-[55%]"></div>
-                        <div className="bg-primary w-full h-[85%]"></div>
-                    </div>
-                </div>
+  const marketCapChange = global?.market_cap_change_percentage_24h_usd;
+  const trend = markets?.marketCapTrend?.map((p) => p.value) ?? [];
+
+  // alternative.me returns newest first: [0] today, [1] yesterday, [7] a week ago
+  const fngToday = fng[0] ? Number(fng[0].value) : null;
+  const fngYesterday = fng[1]?.value;
+  const fngLastWeek = fng[7]?.value;
+
+  return (
+    <section aria-label="Market overview" className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      {global ? (
+        <>
+          <MetricCard title="Total Market Cap" icon="public" aside={<ChangePill value={marketCapChange} />}>
+            <div className="w-full flex items-end justify-between gap-4">
+              <div className="shrink-0">
+                <p className="font-headline text-2xl font-bold tracking-tight">${formatMarketCap(global.total_market_cap.usd)}</p>
+                <p className="mt-1 text-[11px] text-on-surface-variant">
+                  24h vol <span className="text-on-surface font-bold">${formatMarketCap(global.total_volume.usd)}</span>
+                </p>
+              </div>
+              <Sparkline
+                values={trend}
+                color={(marketCapChange ?? 0) < 0 ? DOWN_COLOR : UP_COLOR}
+                className="h-12 w-full max-w-40"
+              />
             </div>
-            <div className="bg-surface-container-low p-4 rounded-xl flex items-center justify-between">
-                <div className="flex flex-col gap-2">
-                    <h3 className="text-[10px] font-label text-on-surface-variant uppercase tracking-widest">Dominance</h3>
-                    <div className="grid grid-cols-3 gap-2">
+          </MetricCard>
 
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-[#f7931a]"></span>
-                                <span className="text-[10px] font-label text-on-surface-variant">Bitcoin</span>
-                            </div>
-                            <div className="font-headline font-bold text-[14px] text-on-surface">{metrics.btcDominance}%</div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-[#627eea]"></span>
-                                <span className="text-[10px] font-label text-on-surface-variant">Ethereum</span>
-                            </div>
-                            <div className="font-headline font-bold text-[14px] text-on-surface">{metrics.ethDominance}%</div>
-                        </div>
-
-                        <div className="space-y-1">
-                            <div className="flex items-center gap-1.5">
-                                <span className="w-2 h-2 rounded-full bg-outline-variant"></span>
-                                <span className="text-[10px] font-label text-on-surface-variant">Others</span>
-                            </div>
-                            <div className="font-headline font-bold text-[14px] text-on-surface">{metrics.othersDominance}%</div>
-                        </div>
-                    </div>
-
-                    <div className="w-full h-1.5 flex rounded-full overflow-hidden bg-surface-container-highest ">
-                        <div className="h-full bg-[#f7931a]" style={{ width: `${metrics.btcDominance}%` }}></div>
-                        <div className="h-full bg-[#627eea]" style={{ width: `${metrics.ethDominance}%` }}></div>
-                        <div className="h-full bg-outline-variant" style={{ width: `${metrics.othersDominance}%` }}></div>
-                    </div>
-                </div>
-
-                {/* <div>
-                    <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant">BTC Dominance</p>
-                    <h3 className="font-headline text-xl font-bold text-secondary">{metrics.btcDominance}%</h3>
-                </div>
-                <div className="relative w-12 h-12 flex items-center justify-center">
-                    <svg className="w-full h-full transform -rotate-90">
-                        <circle className="text-outline-variant/20" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" strokeWidth="4"></circle>
-                        <circle className="text-secondary" cx="24" cy="24" fill="transparent" r="20" stroke="currentColor" strokeDasharray="125.6" strokeDashoffset="60" strokeWidth="4"></circle>
-                    </svg>
-                </div> */}
+          <MetricCard title="Dominance" icon="donut_large">
+            <div className="w-full flex items-center gap-4">
+              <Ring
+                segments={[
+                  { value: btc, color: BTC_COLOR },
+                  { value: eth, color: ETH_COLOR },
+                  { value: others, color: OTHERS_COLOR },
+                ]}
+              >
+                <span className="font-headline text-[13px] font-bold">{btc.toFixed(1)}%</span>
+                <span className="mt-0.5 font-label text-[8px] uppercase tracking-widest text-on-surface-variant">BTC</span>
+              </Ring>
+              <div className="flex-1 min-w-0 flex flex-col gap-1 text-xs">
+                <LegendRow color={BTC_COLOR} label="Bitcoin" value={`${btc.toFixed(1)}%`} />
+                <LegendRow color={ETH_COLOR} label="Ethereum" value={`${eth.toFixed(1)}%`} />
+                <LegendRow color={OTHERS_COLOR} label="Others" value={`${others.toFixed(1)}%`} muted />
+              </div>
             </div>
-            </>
-            ) : (
-            <>
-                <Unavailable label="Total Market Cap" />
-                <Unavailable label="Dominance" />
-            </>
-            )}
-            <div className="bg-surface-container-low p-4 rounded-xl">
-                <p className="font-label text-[10px] uppercase tracking-widest text-on-surface-variant mb-2">BTC Halving Countdown</p>
-                <div className="flex items-baseline gap-1">
-                    <span className="font-headline text-xl font-bold">{daysLeft}</span>
-                    <span className="text-xs text-on-surface-variant">Days Left</span>
-                </div>
-                <div className="w-full bg-surface-container-lowest h-1.5 rounded-full mt-2 mb-1 overflow-hidden">
-                    <div className="bg-tertiary h-full shadow-[0_0_8px_rgba(172,137,255,0.5)]" style={{ width: `${progressPercent.toFixed(2)}%` }}></div>
-                </div>
-                <span className="text-[10px] font-label text-on-surface-variant pt-4">*Bitcoin halving is expected to occur in April 2028</span>
-            </div>
-            {fearAndGreedToday ? (
-            <div className="bg-surface-container-low p-4 rounded-xl">
+          </MetricCard>
+        </>
+      ) : (
+        <>
+          <Unavailable label="Total Market Cap" />
+          <Unavailable label="Dominance" />
+        </>
+      )}
 
-                <div className="flex justify-between items-center mb-2">
-                    <p className="text-[10px] text-on-surface-variant font-label uppercase tracking-widest">Fear &amp; Greed Index</p>
+      <MetricCard
+        title="BTC Halving"
+        icon="hourglass_top"
+        aside={
+          <span className="px-1.5 py-0.5 rounded-md bg-tertiary/10 text-tertiary font-label text-[11px] font-bold">
+            {Math.floor(progressPercent)}%
+          </span>
+        }
+      >
+        <div className="w-full flex items-center gap-4">
+          <Ring segments={[{ value: progressPercent, color: HALVING_COLOR }]} rounded>
+            <span className="font-headline text-base font-bold">{daysLeft}</span>
+            <span className="mt-0.5 font-label text-[8px] uppercase tracking-widest text-on-surface-variant">days</span>
+          </Ring>
+          <div className="flex-1 min-w-0">
+            <p className="font-headline font-bold">
+              ~Apr 2028 <span className="text-xs font-normal text-on-surface-variant">estimated</span>
+            </p>
+            <p className="mt-1 text-[11px] text-on-surface-variant">
+              Reward {REWARD_NOW} → <span className="text-tertiary font-bold">{REWARD_NOW / 2} BTC</span>
+            </p>
+          </div>
+        </div>
+      </MetricCard>
 
-                </div>
-                <div className="flex flex-col items-center">
-                    <FearGreedGauge value={Number(fearAndGreedToday.value)} label={fearAndGreedToday.value_classification} />
-                </div>
+      {fngToday !== null ? (
+        <MetricCard
+          title="Fear & Greed"
+          icon="speed"
+          aside={
+            <span
+              className="px-1.5 py-0.5 rounded-md font-label text-[11px] font-bold"
+              style={{ color: sentimentColor(fngToday), backgroundColor: `${sentimentColor(fngToday)}1a` }}
+            >
+              {fng[0].value_classification}
+            </span>
+          }
+        >
+          <div className="w-full flex items-center gap-4">
+            <FearGreedGauge value={fngToday} />
+            <div className="flex-1 min-w-0">
+              <p className="font-headline text-2xl font-bold" style={{ color: sentimentColor(fngToday) }}>
+                {fngToday}
+                <span className="text-xs font-normal text-on-surface-variant"> / 100</span>
+              </p>
+              <div className="mt-1 text-[11px] text-on-surface-variant">
+                {fngYesterday && (
+                  <p>Yesterday <span className="text-on-surface font-bold">{fngYesterday}</span></p>
+                )}
+                {fngLastWeek && (
+                  <p>Last week <span className="text-on-surface font-bold">{fngLastWeek}</span></p>
+                )}
+              </div>
             </div>
-            ) : (
-                <Unavailable label="Fear & Greed Index" />
-            )}
-        </section>
-    )
-}
+          </div>
+        </MetricCard>
+      ) : (
+        <Unavailable label="Fear & Greed Index" />
+      )}
+    </section>
+  );
+};

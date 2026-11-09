@@ -1,29 +1,47 @@
-type Props = { value: number; label: string }
+// Fear & Greed bands, using alternative.me's own cut-offs.
+export const SENTIMENT_BANDS = [
+  { max: 24, color: "#ff716c" }, // extreme fear (error)
+  { max: 46, color: "#f97316" }, // fear
+  { max: 54, color: "#fbbf24" }, // neutral
+  { max: 75, color: "#a3e635" }, // greed
+  { max: 100, color: "#00FFA3" }, // extreme greed (primary)
+];
 
-export const FearGreedGauge = ({ value, label }: Props) => {
-    const angle = Math.PI * (1 - value / 100)
-    const cx = 65 + 53 * Math.cos(angle)
-    const cy = 61 - 53 * Math.sin(angle)
+export const sentimentColor = (value: number) =>
+  (SENTIMENT_BANDS.find((band) => value <= band.max) ?? SENTIMENT_BANDS.at(-1)!).color;
 
-    return (
-        <div style={{ position: 'relative', width: 130, height: 70, display: 'flex', justifyContent: 'center', alignItems: 'flex-end' }}>
-            <svg width="130" height="70" viewBox="0 0 130 70">
-                {/* Segments */}
-                <path d="M 12 60.99999999999999 A 53 53 0 0 1 18.91676873622339 34.82108107103576" stroke="#EA3943" strokeWidth="6" strokeLinecap="round" fill="none" />
-                <path d="M 23.008648902174897 28.66230631323281 A 53 53 0 0 1 44.46167391803855 12.141252965809464" stroke="#EA8C00" strokeWidth="6" strokeLinecap="round" fill="none" />
-                <path d="M 51.46137482940311 9.75836040396365 A 53 53 0 0 1 78.5386251705969 9.75836040396365" stroke="#F3D42F" strokeWidth="6" strokeLinecap="round" fill="none" />
-                <path d="M 85.53832608196146 12.141252965809471 A 53 53 0 0 1 106.99135109782512 28.662306313232826" stroke="#93D900" strokeWidth="6" strokeLinecap="round" fill="none" />
-                <path d="M 111.08323126377661 34.82108107103576 A 53 53 0 0 1 118 61" stroke="#16C784" strokeWidth="6" strokeLinecap="round" fill="none" />
+const CX = 60;
+const CY = 58;
+const R = 48;
+const GAP = 1.5; // index points left empty between bands
 
-                {/* Indicator */}
-                <circle cx={cx} cy={cy} r="6" fill="none" stroke="rgba(255,255,255,0.2)" strokeWidth="2" />
-                <circle cx={cx} cy={cy} r="5" fill="white" />
-            </svg>
+// Index 0 is the far left of the half circle, 100 the far right.
+const point = (value: number, radius = R) => {
+  const angle = Math.PI * (1 - value / 100);
+  return { x: CX + radius * Math.cos(angle), y: CY - radius * Math.sin(angle) };
+};
 
-            <div style={{ position: 'absolute', bottom: 0, width: '100%', textAlign: 'center', marginBottom: 2.5 }}>
-                <div className="font-headline font-bold text-xl text-on-surface">{value}</div>
-                <div className="text-[10px] text-on-surface-variant font-label uppercase tracking-widest">{label}</div>
-            </div>
-        </div>
-    )
-}
+const arc = (from: number, to: number) => {
+  const a = point(from);
+  const b = point(to);
+  return `M ${a.x.toFixed(2)} ${a.y.toFixed(2)} A ${R} ${R} 0 0 1 ${b.x.toFixed(2)} ${b.y.toFixed(2)}`;
+};
+
+// Half-circle gauge with a needle. Decorative: the number and label next to it carry the meaning.
+export const FearGreedGauge = ({ value }: { value: number }) => {
+  const clamped = Math.min(Math.max(value, 0), 100);
+  const needle = point(clamped, R - 14);
+
+  return (
+    <svg viewBox="0 0 120 64" className="w-28 h-auto shrink-0" aria-hidden>
+      {SENTIMENT_BANDS.map((band, i) => {
+        // Each band runs from the previous band's max to its own, with a small gap in between
+        const from = i === 0 ? 0 : SENTIMENT_BANDS[i - 1].max + GAP / 2;
+        const to = band.max === 100 ? 100 : band.max - GAP / 2;
+        return <path key={band.max} d={arc(from, to)} stroke={band.color} strokeWidth={8} fill="none" />;
+      })}
+      <line x1={CX} y1={CY} x2={needle.x} y2={needle.y} stroke="#f8f9fe" strokeWidth={2.5} strokeLinecap="round" />
+      <circle cx={CX} cy={CY} r={4} fill="#f8f9fe" />
+    </svg>
+  );
+};
