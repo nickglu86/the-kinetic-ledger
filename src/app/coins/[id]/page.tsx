@@ -1,9 +1,13 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { getCoin } from "@/server/data/coin";
+import { getCoin, getCoinChart } from "@/server/data/coin";
 import { CoinHeader } from "@/features/coin/CoinHeader";
+import { CoinChart } from "@/features/coin/CoinChart";
 import { CoinPerformance } from "@/features/coin/CoinPerformance";
 import { CoinStats } from "@/features/coin/CoinStats";
+import { CoinLinks } from "@/features/coin/CoinLinks";
+import { CoinAbout } from "@/features/coin/CoinAbout";
+import { DEFAULT_CHART_DAYS } from "@/features/coin/chartRanges";
 
 // Dynamic route: /coins/bitcoin, /coins/ethereum, ...
 // The folder name [id] becomes params.id. It's the CoinGecko coin id (e.g. "bitcoin"), not the symbol.
@@ -29,17 +33,46 @@ export async function generateMetadata({ params }: PageProps<"/coins/[id]">): Pr
 
 export default async function CoinPage({ params }: PageProps<"/coins/[id]">) {
   const { id } = await params;
-  const coin = await getCoin(id); // same request as generateMetadata, deduped by cache()
+
+  // Fetched in parallel. getCoin is the same request as generateMetadata (deduped by cache()).
+  // The chart is optional: if it fails the page still renders and the chart retries on the client.
+  const [coin, chart] = await Promise.all([
+    getCoin(id),
+    getCoinChart(id, DEFAULT_CHART_DAYS).catch(() => null),
+  ]);
 
   // Unknown id -> render ./not-found.tsx with a 404 status.
   // Other failures (rate limit, outage) throw inside getCoin -> app/error.tsx.
   if (!coin) notFound();
 
+  // Desktop: two columns (sidebar | chart). Mobile: one column in reading order.
+  // The columns use `contents` below lg, so their children join the outer flex column
+  // and `order-*` can interleave them: header, chart, performance, stats, links, about.
   return (
-    <main className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 space-y-12">
-      <CoinHeader coin={coin} />
-      <CoinPerformance coin={coin} />
-      <CoinStats coin={coin} />
+    <main className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:gap-8">
+      <div className="contents lg:flex lg:flex-col lg:gap-6 lg:col-span-4">
+        <div className="order-1 lg:order-none">
+          <CoinHeader coin={coin} />
+        </div>
+        <div className="order-4 lg:order-none">
+          <CoinStats coin={coin} />
+        </div>
+        <div className="order-5 lg:order-none">
+          <CoinLinks coin={coin} />
+        </div>
+      </div>
+
+      <div className="contents lg:flex lg:flex-col lg:gap-6 lg:col-span-8">
+        <div className="order-2 lg:order-none">
+          <CoinChart coinId={coin.id} coinName={coin.name} initialData={chart} />
+        </div>
+        <div className="order-3 lg:order-none">
+          <CoinPerformance coin={coin} />
+        </div>
+        <div className="order-6 lg:order-none">
+          <CoinAbout coin={coin} />
+        </div>
+      </div>
     </main>
   );
 }

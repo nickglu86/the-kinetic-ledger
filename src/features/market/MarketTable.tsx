@@ -20,14 +20,20 @@ export const MarketTable = async () => {
     return (
       <tr
         key={id}
-        className="bg-surface-container-low hover:bg-surface-container-high transition-colors group"
+        // relative: the stretched link below fills this row
+        className="relative cursor-pointer bg-surface-container-low hover:bg-surface-container-high transition-colors group"
       >
         <td className="py-4 pl-4 rounded-l-lg font-headline font-bold text-on-surface-variant">
           {market_cap_rank}
         </td>
         <td className="py-4">
-          {/* A <tr> can't be wrapped in a link, so the asset cell is the link to the coin page */}
-          <Link href={`/coins/${id}`} className="flex items-center gap-3 w-fit">
+          {/* A <tr> can't be wrapped in a link. "Stretched link" instead: the link's ::after is an
+              invisible layer covering the whole row (the nearest positioned ancestor), so a click
+              anywhere on the row opens the coin page. Still one real link per row for keyboard users. */}
+          <Link
+            href={`/coins/${id}`}
+            className="flex items-center gap-3 w-fit after:absolute after:inset-0 after:rounded-lg focus-visible:outline-none focus-visible:after:ring-2 focus-visible:after:ring-secondary"
+          >
             <img
               src={image}
               alt=""

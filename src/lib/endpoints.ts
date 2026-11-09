@@ -10,6 +10,10 @@ export const ENDPOINTS = {
     // id comes from the page URL, so encode it. The =false flags drop large unused parts of the response.
     coinDetail: (id: string) =>
         `${COINGECKO_BASE_URL}/coins/${encodeURIComponent(id)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`,
+    // Price + volume history. Granularity is automatic: 5-min for 1 day, hourly up to 90 days, daily beyond.
+    // The free Demo key only allows days <= 365.
+    coinMarketChart: (id: string, days: number) =>
+        `${COINGECKO_BASE_URL}/coins/${encodeURIComponent(id)}/market_chart?vs_currency=usd&days=${days}`,
     rss: {
         coindesk: "https://www.coindesk.com/arc/outboundfeeds/rss/",
         cointelegraph: "https://cointelegraph.com/rss",

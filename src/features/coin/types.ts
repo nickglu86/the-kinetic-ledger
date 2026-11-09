@@ -7,11 +7,15 @@ export interface CoinDetail {
     symbol: string
     name: string
     market_cap_rank: number | null
+    categories: (string | null)[]
     image: {
         thumb: string
         small: string
         large: string
     }
+    // Plain text for most coins, but some descriptions contain HTML (<a> tags). Never render it as HTML.
+    description: { en?: string }
+    links: CoinLinks
     market_data: {
         current_price: ByCurrency
         market_cap: ByCurrency
@@ -32,7 +36,31 @@ export interface CoinDetail {
         price_change_percentage_1h_in_currency: ByCurrency
         price_change_percentage_24h: number | null
         price_change_percentage_7d: number | null
+        price_change_percentage_14d: number | null
         price_change_percentage_30d: number | null
         price_change_percentage_1y: number | null
     }
+}
+
+// Arrays often contain empty strings, and any of these can be missing.
+export interface CoinLinks {
+    homepage?: string[]
+    whitepaper?: string | null
+    blockchain_site?: string[]
+    official_forum_url?: string[]
+    twitter_screen_name?: string | null
+    facebook_username?: string | null
+    subreddit_url?: string | null
+    repos_url?: { github?: string[] }
+}
+
+// One point on the chart. `time` is in seconds (what lightweight-charts expects), not milliseconds.
+export interface ChartPoint {
+    time: number
+    value: number
+}
+
+export interface CoinChartData {
+    prices: ChartPoint[]
+    volumes: ChartPoint[]
 }
