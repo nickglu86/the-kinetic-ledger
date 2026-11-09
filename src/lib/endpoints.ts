@@ -1,10 +1,12 @@
+export const COINGECKO_BASE_URL = "https://api.coingecko.com/api/v3";
+
 export const ENDPOINTS = {
     coinsMarket: (perPage = 23) =>
-        `https://api.coingecko.com/api/v3/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=1&sparkline=false&price_change_percentage=1h%2C7d%2C30d&locale=en`,
-    global: "https://api.coingecko.com/api/v3/global",
-    trending: "https://api.coingecko.com/api/v3/search/trending",
+        `${COINGECKO_BASE_URL}/coins/markets?vs_currency=usd&order=market_cap_desc&per_page=${perPage}&page=1&sparkline=false&price_change_percentage=1h%2C7d%2C30d&locale=en`,
+    global: `${COINGECKO_BASE_URL}/global`,
+    trending: `${COINGECKO_BASE_URL}/search/trending`,
     fearAndGreed: "https://api.alternative.me/fng/?limit=14",
-    categories: "https://api.coingecko.com/api/v3/coins/categories",
+    categories: `${COINGECKO_BASE_URL}/coins/categories`,
     rss: {
         coindesk: "https://www.coindesk.com/arc/outboundfeeds/rss/",
         cointelegraph: "https://cointelegraph.com/rss",

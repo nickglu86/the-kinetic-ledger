@@ -1,9 +1,13 @@
 import { ENDPOINTS } from "@/lib/endpoints";
-import { fetchData } from "@/lib/fetcher";
+import { safeFetch } from "@/lib/fetcher";
 import { TrendingResponse } from "@/types/api";
 
 export const TrendingNFTs = async () => {
-  const { nfts } = await fetchData<TrendingResponse>(ENDPOINTS.trending);
+  const trending = await safeFetch<TrendingResponse>(ENDPOINTS.trending);
+  // Non-critical section: hide it entirely if the fetch fails.
+  if (!trending) return null;
+
+  const { nfts } = trending;
 
   return (
     <section className="mb-14">

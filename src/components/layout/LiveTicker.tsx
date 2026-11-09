@@ -1,23 +1,21 @@
 import { ENDPOINTS } from "@/lib/endpoints";
-import { fetchData } from "@/lib/fetcher";
+import { safeFetch } from "@/lib/fetcher";
 import { ICoin } from "@/types/api";
-import { cn } from "@/lib/utils";
-import { formatPercent, formatPrice, isPositive } from "@/lib/formats";
+import { formatPrice } from "@/lib/formats";
+import { PercentChange } from "@/components/ui/PercentChange";
 
 const STABLE_COINS = ["usdt", "usdc", "usds"];
 
 export const LiveTicker = async () => {
-  const coins = await fetchData<ICoin[]>(ENDPOINTS.coinsMarket(30));
+  const coins = await safeFetch<ICoin[]>(ENDPOINTS.coinsMarket(30));
+  // Lives in the root layout, so a throw here would hit global-error. Just hide the ticker instead.
+  if (!coins) return null;
+
   const filtered = coins.filter(
     (coin: ICoin) => !STABLE_COINS.includes(coin.symbol),
   );
 
   const Coin = ({ coin, index }: { coin: ICoin, index: number }) => {
-    const price24hPercentIsPositive = isPositive(
-      coin.price_change_percentage_24h,
-    );
-    const price24hPercent = formatPercent(coin.price_change_percentage_24h);
-
     return (
       <div
         key={`${coin.id}-${index}`}
@@ -34,16 +32,7 @@ export const LiveTicker = async () => {
         <span className="font-headline font-bold text-on-surface">
           ${formatPrice(coin.current_price)}
         </span>
-        <span
-          className={cn(
-            "text-xs font-bold",
-            price24hPercentIsPositive
-              ? "text-primary"
-              : "text-error",
-          )}
-        >
-          {price24hPercent}
-        </span>
+        <PercentChange value={coin.price_change_percentage_24h} className="text-xs" />
       </div>
     );
   };

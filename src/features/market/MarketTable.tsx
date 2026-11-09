@@ -1,12 +1,12 @@
 import { ENDPOINTS } from "@/lib/endpoints";
-import { fetchData } from "@/lib/fetcher";
-import { formatMarketCap, formatPercent, formatPrice, isPositive } from "@/lib/formats";
-import { cn } from "@/lib/utils";
+import { safeFetch } from "@/lib/fetcher";
+import { formatMarketCap, formatPrice } from "@/lib/formats";
 import { ICoin } from "@/types/api";
+import { PercentChange } from "@/components/ui/PercentChange";
+import { Unavailable } from "@/components/ui/Unavailable";
 
 export const MarketTable = async () => {
-  const coins = await fetchData<ICoin[]>(ENDPOINTS.coinsMarket(100));
-  console.log(coins);
+  const coins = await safeFetch<ICoin[]>(ENDPOINTS.coinsMarket(100));
 
   const Coin = ({coin}:{ coin: ICoin}) => {
     
@@ -14,16 +14,6 @@ export const MarketTable = async () => {
 
     const current_price = formatPrice(coin.current_price);
     const symbol = coin.symbol.toLocaleUpperCase();
-         
-    const price1hPercentIsPositive = isPositive(coin.price_change_percentage_1h_in_currency)
-    const price1hPercent = formatPercent(coin.price_change_percentage_1h_in_currency)
-
-    const price24hPercentIsPositive =  isPositive(coin.price_change_percentage_24h)
-    const price24hPercent = formatPercent(coin.price_change_percentage_24h)
-
-    const price7dPercentIsPositive =  isPositive(coin.price_change_percentage_7d_in_currency)
-    const price7dPercent = formatPercent(coin.price_change_percentage_7d_in_currency)
-
     const marketCap = formatMarketCap(coin.market_cap)
 
     return (
@@ -53,35 +43,14 @@ export const MarketTable = async () => {
         <td className="py-4 font-headline font-bold">
           ${current_price}
         </td>
-        <td
-          className={cn(
-            "py-4 text-primary font-bold text-sm text-center",
-            price1hPercentIsPositive
-              ? "text-primary"
-              : "text-error",
-          )}
-        >
-          {price1hPercent}
+        <td className="py-4 text-sm text-center">
+          <PercentChange value={coin.price_change_percentage_1h_in_currency} />
         </td>
-        <td
-          className={cn(
-            "py-4 text-primary font-bold text-sm  text-center",
-            price24hPercentIsPositive
-              ? "text-primary"
-              : "text-error",
-          )}
-        >
-          {price24hPercent}
+        <td className="py-4 text-sm text-center">
+          <PercentChange value={coin.price_change_percentage_24h} />
         </td>
-        <td
-          className={cn(
-            "py-4 text-primary font-bold text-sm text-center",
-            price7dPercentIsPositive
-              ? "text-primary"
-              : "text-error",
-          )}
-        >
-          {price7dPercent}
+        <td className="py-4 text-sm text-center">
+          <PercentChange value={coin.price_change_percentage_7d_in_currency} />
         </td>
         <td className="py-4 text-right pr-4 rounded-r-lg font-headline text-on-surface-variant">
           ${marketCap}
@@ -99,6 +68,9 @@ export const MarketTable = async () => {
           Top 10 Assets
         </span>
       </div>
+      {!coins ? (
+        <Unavailable className="py-10 items-center" />
+      ) : (
       <div className="overflow-x-auto no-scrollbar">
         <table className="w-full text-left border-separate border-spacing-y-2">
           <thead>
@@ -117,6 +89,7 @@ export const MarketTable = async () => {
           </tbody>
         </table>
       </div>
+      )}
     </div>
   );
 };

@@ -1,11 +1,15 @@
 import { ENDPOINTS } from "@/lib/endpoints";
-import { fetchData } from "@/lib/fetcher";
+import { safeFetch } from "@/lib/fetcher";
 import { formatPrice } from "@/lib/formats";
-import { cn } from "@/lib/utils";
 import { TrendingResponse } from "@/types/api";
+import { PercentChange } from "@/components/ui/PercentChange";
+import { Unavailable } from "@/components/ui/Unavailable";
 
 export const TrendingCoins = async () => {
-    const { coins } = await fetchData<TrendingResponse>(ENDPOINTS.trending);
+    const trending = await safeFetch<TrendingResponse>(ENDPOINTS.trending);
+    if (!trending) return <Unavailable label="Trending" className="bg-surface-container-high p-6" />;
+
+    const { coins } = trending;
     return (
         <div className="bg-surface-container-high rounded-xl p-6 glow-primary">
             <div className="flex justify-between">
@@ -41,8 +45,8 @@ export const TrendingCoins = async () => {
                             <div className="text-right">
                                                                           <p className="text-[12px] text-on-surface-variant">${formatPrice(coin.item.data.price)}</p>
                       
-                                <p className={cn("ont-bold text-xs", coin.item.data.price_change_percentage_24h.usd >= 0 ? "text-primary" : "text-error")}>
-                                    {coin.item.data.price_change_percentage_24h.usd >= 0 ? "+" : null}{coin.item.data.price_change_percentage_24h.usd.toFixed(2)}%
+                                <p className="text-xs">
+                                    <PercentChange value={coin.item.data.price_change_percentage_24h?.usd} />
                                 </p>
                             </div>
                         </div>

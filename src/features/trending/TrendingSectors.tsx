@@ -1,15 +1,22 @@
 import { ENDPOINTS } from "@/lib/endpoints"
-import { fetchData } from "@/lib/fetcher"
-import { cn } from "@/lib/utils";
+import { safeFetch } from "@/lib/fetcher"
 import { Category, TrendingResponse } from "@/types/api"
+import { PercentChange } from "@/components/ui/PercentChange";
 
 const COLORS = ['#00FFA3', '#00e3fd', '#ac89ff', '#ff716c', '#fbbf24', '#f97316', '#a78bfa'];
 
 export const TrendingSectors = async () => {
-    const { categories: trendingCategories } = await fetchData<TrendingResponse>(ENDPOINTS.trending);
-    const allCategories = await fetchData<Category[]>(ENDPOINTS.categories);
+    const [trending, allCategories] = await Promise.all([
+        safeFetch<TrendingResponse>(ENDPOINTS.trending),
+        safeFetch<Category[]>(ENDPOINTS.categories),
+    ]);
 
-    const categoriesMap = new Map(allCategories.map(cat => [cat.name, cat]))
+    // Non-critical strip: hide it if trending fails. If only /categories fails,
+    // still render the sectors, just without the top-3 coin icons.
+    if (!trending) return null;
+    const trendingCategories = trending.categories;
+
+    const categoriesMap = new Map((allCategories ?? []).map(cat => [cat.name, cat]))
     const categories = trendingCategories.map(
         cat => ({
             ...cat,
@@ -42,8 +49,8 @@ export const TrendingSectors = async () => {
                                     (coin,index) => (<img key={index} className="w-7 h-7 rounded-full border border-surface bg-surface-container-lowest flex items-center justify-center text-[8px] font-bold text-primary" src={coin} />)
                                 )}
                                 </div>
-                               <p className={cn("text-[13px] font-bold tracking-tight", category.data.market_cap_change_percentage_24h.usd >= 0 ? "text-primary" : "text-error")}>
-                                {category.data.market_cap_change_percentage_24h.usd >= 0 ? "+" : null}{category.data.market_cap_change_percentage_24h.usd.toFixed(2)}%
+                               <p className="text-[13px] tracking-tight">
+                                <PercentChange value={category.data.market_cap_change_percentage_24h?.usd} />
                                 </p>
 
                             </div>
