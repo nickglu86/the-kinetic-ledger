@@ -2,6 +2,7 @@ import { cache } from "react";
 import { REVALIDATE } from "@/lib/cacheTimes";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { FetchError, fetchData } from "@/lib/fetcher";
+import { isKnownCoinId } from "./coinIds";
 import { ChartPoint, CoinChartData, CoinDetail } from "@/features/coin/types";
 import { ChartDays } from "@/features/coin/chartRanges";
 
@@ -11,6 +12,8 @@ import { ChartDays } from "@/features/coin/chartRanges";
 // - Throws on anything else (429 rate limit, 5xx, network) -> nearest error.tsx shows "try again".
 // - cache() dedupes calls within one request, so generateMetadata and the page share a single fetch.
 export const getCoin = cache(async (id: string): Promise<CoinDetail | null> => {
+  // Unknown id: 404 without spending an API call
+  if (!(await isKnownCoinId(id))) return null;
   try {
     return await fetchData<CoinDetail>(ENDPOINTS.coinDetail(id), REVALIDATE.coinDetail);
   } catch (error) {
@@ -42,6 +45,7 @@ const toChartPoints = (rows: [number, number][]): ChartPoint[] => {
 
 // Same contract as getCoin: null for an unknown coin, throws for anything else.
 export const getCoinChart = cache(async (id: string, days: ChartDays): Promise<CoinChartData | null> => {
+  if (!(await isKnownCoinId(id))) return null;
   try {
     const data = await fetchData<MarketChartResponse>(ENDPOINTS.coinMarketChart(id, days), CHART_REVALIDATE[days]);
     return { prices: toChartPoints(data.prices), volumes: toChartPoints(data.total_volumes) };

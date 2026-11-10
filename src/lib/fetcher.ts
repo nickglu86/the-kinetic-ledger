@@ -39,13 +39,14 @@ export class FetchError extends Error {
 
 export const fetchData = async <T>(
   url: string,
-  revalidate?: number,
+  // Seconds, from REVALIDATE (lib/cacheTimes.ts); 5 min is a safe fallback.
+  // false = don't store the raw response, for callers that cache a smaller result themselves.
+  revalidate?: number | false,
 ): Promise<T> => {
   const start = Date.now();
   const response = await fetch(url, {
     headers: getHeaders(url),
-    // Callers pass a time from REVALIDATE (lib/cacheTimes.ts); 5 min is a safe fallback.
-    next: { revalidate: revalidate ?? 300 },
+    ...(revalidate === false ? { cache: "no-store" as const } : { next: { revalidate: revalidate ?? 300 } }),
   });
 
   if (!response.ok) {

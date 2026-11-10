@@ -9,8 +9,9 @@
 //   global        600 s  →  4,320
 //   trending     1800 s  →  1,440
 //   categories   3600 s  →    720
+//   coin id list   6 h   →    120   (lets unknown coin URLs 404 without calling CoinGecko)
 //                          ───────
-//                          ~28,000 calls/month at most, plus coin pages (each coin only when visited).
+//                          ~28,000 calls/month at most, plus coin pages (each real coin only when visited).
 //
 // Real traffic is far lower than "every few minutes, all day", but if the dashboard on
 // coingecko.com/en/developers/dashboard gets close to the limit, raise marketList first.
@@ -21,6 +22,7 @@ export const REVALIDATE = {
   trending: 1800,
   categories: 3600,
   coinDetail: 300,
+  coinList: 21600, // a coin listed today may 404 for up to 6 h
 
   // Other sources (not CoinGecko, no shared monthly limit)
   fearAndGreed: 3600, // updated once a day

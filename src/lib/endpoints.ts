@@ -8,6 +8,8 @@ export const ENDPOINTS = {
     trending: `${COINGECKO_BASE_URL}/search/trending`,
     fearAndGreed: "https://api.alternative.me/fng/?limit=14",
     categories: `${COINGECKO_BASE_URL}/coins/categories`,
+    // Every coin's id, symbol and name (~22,800 coins, ~1.5 MB). Used to reject unknown coin URLs.
+    coinsList: `${COINGECKO_BASE_URL}/coins/list`,
     // id comes from the page URL, so encode it. The =false flags drop large unused parts of the response.
     coinDetail: (id: string) =>
         `${COINGECKO_BASE_URL}/coins/${encodeURIComponent(id)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`,
