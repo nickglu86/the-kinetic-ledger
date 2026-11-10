@@ -1,20 +1,15 @@
-import { cn } from "@/lib/utils";
+import { Bone, Skeleton } from "@/components/ui/Skeleton";
 
 // Shown instantly while page.tsx waits on CoinGecko (Next wraps the page in <Suspense> with this as the fallback).
 // It mirrors the real layout (same grid, same order trick, same heights) so nothing jumps when the data arrives.
 
-// One grey placeholder bar. Purely visual, so screen readers skip it.
-const Bone = ({ className }: { className: string }) => (
-  <div aria-hidden className={cn("rounded bg-surface-container-high", className)} />
-);
-
 export default function CoinLoading() {
   return (
-    <main
-      aria-busy="true"
-      className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:gap-8 animate-pulse"
+    <Skeleton
+      as="main"
+      label="Loading coin data"
+      className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:gap-8"
     >
-      <p className="sr-only" role="status">Loading coin data…</p>
 
       <div className="contents lg:flex lg:flex-col lg:gap-6 lg:col-span-4">
         {/* Header: back link, icon + name, price, 24h range */}
@@ -86,6 +81,6 @@ export default function CoinLoading() {
           </div>
         </div>
       </div>
-    </main>
+    </Skeleton>
   );
 }

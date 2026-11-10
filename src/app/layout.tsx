@@ -4,7 +4,8 @@ import "./globals.css";
 import { Header } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { MobileNav } from "@/components/layout/MobielNav";
-import { LiveTicker } from "@/components/layout/LiveTicker";
+import { LiveTicker, LiveTickerSkeleton } from "@/components/layout/LiveTicker";
+import { Suspense } from "react";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-headline",
@@ -47,7 +48,10 @@ export default function RootLayout({
         rel="stylesheet" />
       </head>
       <body className="bg-surface text-on-surface font-headline selection:bg-primary selection:text-on-primary">
-        <LiveTicker />
+        {/* The ticker fetches prices; without Suspense every page would wait for it before showing anything */}
+        <Suspense fallback={<LiveTickerSkeleton />}>
+          <LiveTicker />
+        </Suspense>
         <Header />
         {children}
         <Footer />

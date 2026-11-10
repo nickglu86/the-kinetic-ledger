@@ -16,7 +16,7 @@ export const TrendingCoins = async () => {
             <div className="flex justify-between">
                 <h3 className="font-headline text-lg font-bold uppercase tracking-tight mb-4 flex items-center gap-2">
                     <span className="material-symbols-outlined text-secondary">local_fire_department</span>
-                    Trending 15
+                    Trending
                 </h3>
                 {/* <div className="text-on-surface-variant font-label text-[10px] uppercase tracking-widest">
                     <span className="">Price</span>

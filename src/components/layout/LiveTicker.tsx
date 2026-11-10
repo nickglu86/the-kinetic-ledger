@@ -52,3 +52,14 @@ export const LiveTicker = async () => {
     </div>
   );
 };
+
+// Same height as the ticker, shown while its prices load (the layout wraps LiveTicker in <Suspense>).
+export const LiveTickerSkeleton = () => (
+  <div aria-hidden className="w-full bg-surface-container-lowest py-2 overflow-hidden border-b border-outline-variant/10">
+    <div className="flex gap-8 px-4 animate-pulse motion-reduce:animate-none">
+      {Array.from({ length: 10 }, (_, i) => (
+        <div key={i} className="h-8 w-44 shrink-0 rounded-lg bg-surface-container-low border-l-4 border-primary/30" />
+      ))}
+    </div>
+  </div>
+);
