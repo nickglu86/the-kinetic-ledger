@@ -7,6 +7,8 @@ import { CoinPerformance } from "@/features/coin/CoinPerformance";
 import { CoinStats } from "@/features/coin/CoinStats";
 import { CoinLinks } from "@/features/coin/CoinLinks";
 import { CoinAbout } from "@/features/coin/CoinAbout";
+import { CoinNews } from "@/features/coin/CoinNews";
+import { getCoinNews } from "@/server/data/news";
 import { DEFAULT_CHART_DAYS } from "@/features/coin/chartRanges";
 
 // Dynamic route: /coins/bitcoin, /coins/ethereum, ...
@@ -45,9 +47,12 @@ export default async function CoinPage({ params }: PageProps<"/coins/[id]">) {
   // Other failures (rate limit, outage) throw inside getCoin -> app/error.tsx.
   if (!coin) notFound();
 
+  // Needs the coin name/symbol, so it runs after getCoin. The RSS feeds are cached, so this is quick.
+  const news = await getCoinNews(coin.name, coin.symbol);
+
   // Desktop: two columns (sidebar | chart). Mobile: one column in reading order.
   // The columns use `contents` below lg, so their children join the outer flex column
-  // and `order-*` can interleave them: header, chart, performance, stats, links, about.
+  // and `order-*` can interleave them: header, chart, performance, stats, links, about, news.
   return (
     <main className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 flex flex-col gap-6 lg:grid lg:grid-cols-12 lg:gap-8">
       <div className="contents lg:flex lg:flex-col lg:gap-6 lg:col-span-4">
@@ -71,6 +76,9 @@ export default async function CoinPage({ params }: PageProps<"/coins/[id]">) {
         </div>
         <div className="order-6 lg:order-none">
           <CoinAbout coin={coin} />
+        </div>
+        <div className="order-7 lg:order-none empty:hidden">
+          <CoinNews coinName={coin.name} articles={news} />
         </div>
       </div>
     </main>

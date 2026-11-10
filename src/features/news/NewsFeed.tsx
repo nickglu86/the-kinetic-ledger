@@ -3,13 +3,12 @@
 import { useState } from "react";
 import { cn } from "@/lib/utils";
 import type { FeedArticle } from "./types";
+import { externalLinkProps, sourceLogo } from "./shared";
 
 const ALL = "All";
 // 1 lead story + 4 rows of 3 cards
 const INITIAL_COUNT = 13;
 const LOAD_MORE_COUNT = 12;
-
-const sourceLogo = (source: string) => `/assets/news-sources/${source.toLowerCase()}.png`;
 
 // Image, or a source-logo placeholder when the feed item has none.
 // eager: the lead image is above the fold, so lazy-loading it would only delay it.
@@ -40,9 +39,6 @@ const ArticleMeta = ({ article }: { article: FeedArticle }) => (
     )}
   </div>
 );
-
-// External article: the whole card is the link. noopener so the news site can't reach back into our tab.
-const externalLinkProps = { target: "_blank", rel: "noopener noreferrer" } as const;
 
 const LeadArticle = ({ article }: { article: FeedArticle }) => (
   <a

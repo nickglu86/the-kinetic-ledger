@@ -57,3 +57,21 @@ export const getAllNews = async (): Promise<NewsFeedData> => {
     failedSources: results.filter((r) => !r.articles).map((r) => r.source),
   };
 };
+
+const escapeRegExp = (text: string) => text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+
+// Whole word only: "ETH" must not match "Ethena", "SOL" must not match "Solana" or "SOLVE".
+// The symbol is matched in capitals only, so short symbols like "ONE" or "S" don't hit normal words.
+const coinPattern = (name: string, symbol: string) => {
+  const terms = [escapeRegExp(name.trim())];
+  if (symbol.trim().length >= 2) terms.push(escapeRegExp(symbol.trim().toUpperCase()));
+  return new RegExp(`(?<!\\w)(?:${terms.join("|")})(?!\\w)`);
+};
+
+// Latest headlines that mention a coin by name ("Bitcoin") or ticker ("BTC").
+// Reuses the cached RSS feeds, so this costs no extra requests.
+export const getCoinNews = async (name: string, symbol: string, limit = 6): Promise<FeedArticle[]> => {
+  const { articles } = await getAllNews();
+  const pattern = coinPattern(name, symbol);
+  return articles.filter((article) => pattern.test(article.title)).slice(0, limit);
+};

@@ -42,6 +42,25 @@
     animation: marquee 400s linear infinite;
   }
 
+  /* NewsWire lead story timer: the bar fills up, and animationend moves to the next story */
+  @keyframes story-progress {
+    from { transform: scaleX(0); }
+    to { transform: scaleX(1); }
+  }
+
+  .animate-story-progress {
+    transform-origin: left;
+    animation: story-progress 8s linear forwards;
+  }
+
+  /* No auto-rotation for people who asked for less motion: the bar just shows as full */
+  @media (prefers-reduced-motion: reduce) {
+    .animate-story-progress {
+      animation: none;
+      transform: scaleX(1);
+    }
+  }
+
   .no-scrollbar::-webkit-scrollbar {
     display: none;
   }

@@ -1,21 +1,14 @@
-import { fetchRSS, safeFetchRSS } from "@/lib/rss";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { NewsHeroClient } from "./NewsHeroClient";
-import { NewsArticle } from "@/types/api";
+import { Unavailable } from "@/components/ui/Unavailable";
+import { getAllNews } from "@/server/data/news";
+import { NewsWire } from "./NewsWire";
 
+// Home page "The Terminal": server fetch -> client render.
+// The 3 RSS feeds are fetched and merged on the server (same cached data as /news),
+// the rotating lead story and the source switcher run in the browser.
 export const NewsHero = async () => {
-    // Fetch News RSS resources
-    const [coindesk, cointelegraph, decrypt] = await Promise.all([
-      safeFetchRSS(ENDPOINTS.rss.coindesk),
-      safeFetchRSS(ENDPOINTS.rss.cointelegraph),
-      safeFetchRSS(ENDPOINTS.rss.decrypt),
-    ])
+  const { articles, sources } = await getAllNews();
 
-    // Build sources object — only include feeds that succeeded
-    const sources: Record<string, NewsArticle[]> = {}
-    if (coindesk) sources["CoinDesk"] = coindesk
-    if (cointelegraph) sources["CoinTelegraph"] = cointelegraph
-    if (decrypt) sources["Decrypt"] = decrypt
+  if (articles.length === 0) return <Unavailable label="News" />;
 
-    return <NewsHeroClient sources={sources} />
-}
+  return <NewsWire articles={articles} sources={sources} />;
+};
