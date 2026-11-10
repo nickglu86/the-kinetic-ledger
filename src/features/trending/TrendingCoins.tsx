@@ -86,10 +86,12 @@ export const TrendingCoins = async () => {
                     </div>
                 </div> */}
 
-                <button
-                    className="w-full py-2 mt-2 bg-surface-container-lowest text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-secondary transition-all rounded">
-                    View all trending
-                </button>
+                {/* The Markets page shows trending coins next to the top gainers and the full coin list */}
+                <Link
+                    href="/markets"
+                    className="block w-full py-2 mt-2 bg-surface-container-lowest text-center text-[10px] uppercase tracking-widest font-bold text-on-surface-variant hover:text-secondary transition-all rounded">
+                    Explore all markets
+                </Link>
             </div>
         </div>
     )

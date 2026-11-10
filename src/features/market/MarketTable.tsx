@@ -4,6 +4,7 @@ import { formatMarketCap, formatPrice } from "@/lib/formats";
 import { ICoin } from "@/types/api";
 import { PercentChange } from "@/components/ui/PercentChange";
 import { Unavailable } from "@/components/ui/Unavailable";
+import { WatchStar } from "@/features/watchlist/WatchStar";
 
 export const MarketTable = async () => {
   // Top 10 of the shared market list (same cached call as the ticker and the Markets page).
@@ -23,8 +24,11 @@ export const MarketTable = async () => {
         // relative: the stretched link below fills this row
         className="relative cursor-pointer bg-surface-container-low hover:bg-surface-container-high transition-colors group"
       >
-        <td className="py-4 pl-4 rounded-l-lg font-headline font-bold text-on-surface-variant">
-          {market_cap_rank}
+        <td className="py-4 pl-2 rounded-l-lg font-headline font-bold text-on-surface-variant">
+          <span className="flex items-center gap-1">
+            <WatchStar coinId={id} coinName={name} />
+            {market_cap_rank}
+          </span>
         </td>
         <td className="py-4">
           {/* A <tr> can't be wrapped in a link. "Stretched link" instead: the link's ::after is an
@@ -73,13 +77,22 @@ export const MarketTable = async () => {
         <h2 className="font-headline font-extrabold text-3xl tracking-tighter uppercase">
           Market Rankings
         </h2>
-        <Link
-          href="/markets"
-          className="inline-flex items-center gap-1 font-label text-primary text-xs font-bold tracking-widest uppercase hover:underline"
-        >
-          All coins
-          <span aria-hidden className="material-symbols-outlined text-sm">arrow_forward</span>
-        </Link>
+        <div className="flex items-center gap-5">
+          <Link
+            href="/heatmap"
+            className="inline-flex items-center gap-1 font-label text-secondary text-xs font-bold tracking-widest uppercase hover:underline"
+          >
+            <span aria-hidden className="material-symbols-outlined text-sm">grid_view</span>
+            Heatmap
+          </Link>
+          <Link
+            href="/markets"
+            className="inline-flex items-center gap-1 font-label text-primary text-xs font-bold tracking-widest uppercase hover:underline"
+          >
+            All coins
+            <span aria-hidden className="material-symbols-outlined text-sm">arrow_forward</span>
+          </Link>
+        </div>
       </div>
       {!coins ? (
         <Unavailable className="py-10 items-center" />

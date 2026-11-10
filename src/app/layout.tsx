@@ -6,6 +6,7 @@ import { Footer } from "@/components/layout/Footer";
 import { MobileNav } from "@/components/layout/MobielNav";
 import { LiveTicker, LiveTickerSkeleton } from "@/components/layout/LiveTicker";
 import { Suspense } from "react";
+import { WatchlistSync } from "@/features/watchlist/WatchlistSync";
 
 const spaceGrotesk = Space_Grotesk({
   variable: "--font-headline",
@@ -56,6 +57,7 @@ export default function RootLayout({
         {children}
         <Footer />
         <MobileNav />
+        <WatchlistSync />
       </body>
     </html>
   );

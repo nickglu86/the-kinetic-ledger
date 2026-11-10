@@ -15,9 +15,13 @@ export const TrendingNFTs = async () => {
       <div className="flex flex-nowrap overflow-x-auto gap-6 pb-2 [scrollbar-width:thin]
                 [scrollbar-color:#000_transparent]">
         {nfts.map((nft) => (
-          <div
+          // No NFT pages on this site: each card opens the collection on CoinGecko in a new tab
+          <a
             key={nft.id}
-            className="bg-surface-container hover:bg-surface-container-high rounded-xl overflow-hidden flex flex-col group w-65 flex-shrink-0 transition-all cursor-pointer"
+            href={`https://www.coingecko.com/en/nft/${encodeURIComponent(nft.id)}`}
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-surface-container hover:bg-surface-container-high rounded-xl overflow-hidden flex flex-col group w-65 flex-shrink-0 transition-all focus-visible:outline-2 focus-visible:outline-secondary"
           >
             <div
               className="h-[3px] w-full flex-shrink-0"
@@ -31,11 +35,8 @@ export const TrendingNFTs = async () => {
             <div className="p-4 flex flex-col gap-4">
               <div className="flex items-center gap-4">
                 <div className="w-12 h-12 rounded-lg overflow-hidden flex-shrink-0">
-                  <img
-                    className="w-full h-full object-cover"
-                    data-alt="Bored Ape Yacht Club NFT profile avatar"
-                    src={nft.thumb}
-                  />
+                  {/* Decorative: the collection name is right next to it */}
+                  <img className="w-full h-full object-cover" alt="" src={nft.thumb} />
                 </div>
                 <div>
                   <h4 className="font-bold text-sm">{nft.name}</h4>
@@ -51,7 +52,7 @@ export const TrendingNFTs = async () => {
                 </span>
               </div>
             </div>
-          </div>
+          </a>
         ))}
       </div>
     </section>

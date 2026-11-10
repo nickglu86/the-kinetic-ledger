@@ -1,5 +1,6 @@
 import Link from "next/link";
 import { PercentChange } from "@/components/ui/PercentChange";
+import { WatchStar } from "@/features/watchlist/WatchStar";
 import { clampPercent, isNum, usdPrice } from "./format";
 import { CoinDetail } from "./types";
 
@@ -18,7 +19,7 @@ export const CoinHeader = ({ coin }: { coin: CoinDetail }) => {
   return (
     <section className="space-y-5">
       <Link
-        href="/"
+        href="/markets"
         className="inline-flex items-center gap-1 font-label text-[10px] uppercase tracking-widest text-on-surface-variant hover:text-secondary transition-colors"
       >
         <span className="material-symbols-outlined text-sm">arrow_back</span>
@@ -37,6 +38,7 @@ export const CoinHeader = ({ coin }: { coin: CoinDetail }) => {
             #{market_cap_rank}
           </span>
         )}
+        <WatchStar coinId={coin.id} coinName={name} size="md" className="ml-auto" />
       </div>
 
       <div className="flex items-baseline gap-3 flex-wrap">

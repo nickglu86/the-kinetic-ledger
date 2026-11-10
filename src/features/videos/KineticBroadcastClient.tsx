@@ -49,7 +49,7 @@ export const KineticBroadcastClient = ({ videos }: KineticBroadcastClientProps) 
                     {activeVideoId ? (
                         <iframe
                             className="w-full h-full"
-                            src={`https://www.youtube.com/embed/${activeVideoId}?autoplay=1`}
+                            src={`https://www.youtube-nocookie.com/embed/${activeVideoId}?autoplay=1`}
                             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
                             allowFullScreen
                         />

@@ -8,6 +8,7 @@ import { SortableHeader } from "@/components/ui/SortableHeader";
 import { Pagination } from "@/components/ui/Pagination";
 import { SearchInput } from "@/components/ui/SearchInput";
 import { useTableState, type SortDir } from "@/hooks/useTableState";
+import { WatchStar } from "@/features/watchlist/WatchStar";
 import type { MarketCoin } from "./types";
 
 type SortKey = "rank" | "name" | "price" | "change1h" | "change24h" | "change7d" | "volume" | "marketCap";
@@ -34,7 +35,13 @@ const matches = (coin: MarketCoin, query: string) =>
 // Rank and name read naturally low→high / A→Z; every number column starts with the biggest.
 const defaultDir = (key: SortKey): SortDir => (key === "rank" || key === "name" ? "asc" : "desc");
 
-export const CoinsTable = ({ coins }: { coins: MarketCoin[] }) => {
+interface CoinsTableProps {
+  coins: MarketCoin[];
+  /** Section heading; the Watchlist page reuses this table. */
+  title?: string;
+}
+
+export const CoinsTable = ({ coins, title = "All Coins" }: CoinsTableProps) => {
   const table = useTableState<MarketCoin, SortKey>({
     items: coins,
     pageSize: PAGE_SIZE,
@@ -64,7 +71,7 @@ export const CoinsTable = ({ coins }: { coins: MarketCoin[] }) => {
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
         <h2 id="coins-table-heading" className="font-headline text-lg font-bold uppercase tracking-tight flex items-center gap-2">
           <span aria-hidden className="w-1 h-6 bg-primary" />
-          All Coins
+          {title}
         </h2>
         <SearchInput value={table.query} onChange={table.setQuery} label="Search coin or symbol" className="w-full sm:w-72" />
       </div>
@@ -73,7 +80,7 @@ export const CoinsTable = ({ coins }: { coins: MarketCoin[] }) => {
         <table className="w-full sm:min-w-160 text-left border-separate border-spacing-y-2">
           <thead>
             <tr className="text-on-surface-variant font-label text-[10px] uppercase tracking-widest">
-              {header("#", "rank", "pl-4 w-12")}
+              {header("#", "rank", "pl-4 w-20")}
               {header("Asset", "name")}
               {header("Price", "price")}
               {header("1h", "change1h", "text-center hidden md:table-cell")}
@@ -90,8 +97,11 @@ export const CoinsTable = ({ coins }: { coins: MarketCoin[] }) => {
                 key={coin.id}
                 className="relative bg-surface-container-low hover:bg-surface-container-high transition-colors group"
               >
-                <td className="py-3 pl-4 rounded-l-lg font-headline font-bold text-on-surface-variant">
-                  {coin.market_cap_rank ?? "—"}
+                <td className="py-3 pl-2 rounded-l-lg font-headline font-bold text-on-surface-variant">
+                  <span className="flex items-center gap-1">
+                    <WatchStar coinId={coin.id} coinName={coin.name} />
+                    {coin.market_cap_rank ?? "—"}
+                  </span>
                 </td>
                 <td className="py-3 pr-4">
                   <Link

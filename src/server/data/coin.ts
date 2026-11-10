@@ -2,7 +2,7 @@ import { cache } from "react";
 import { REVALIDATE } from "@/lib/cacheTimes";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { FetchError, fetchData } from "@/lib/fetcher";
-import { isKnownCoinId } from "./coinIds";
+import { isKnownCoinId } from "./coinList";
 import { ChartPoint, CoinChartData, CoinDetail } from "@/features/coin/types";
 import { ChartDays } from "@/features/coin/chartRanges";
 

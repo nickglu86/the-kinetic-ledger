@@ -71,3 +71,28 @@
   }
 
   
+/* Heatmap tiles (features/heatmap): each tile is a size container, so its labels scale with the
+   tile's own width and height (cqmin = 1% of the smaller side) and drop out when they won't fit. */
+.heat-tile {
+  container-type: size;
+}
+.heat-sym {
+  font-size: clamp(9px, 22cqmin, 44px);
+}
+.heat-pct {
+  margin-top: 2px;
+  font-size: clamp(9px, 10cqmin, 16px);
+}
+.heat-price {
+  margin-top: 2px;
+  font-size: clamp(9px, 7cqmin, 12px);
+}
+@container (max-width: 30px) or (max-height: 20px) {
+  .heat-sym { display: none; }
+}
+@container (max-width: 48px) or (max-height: 42px) {
+  .heat-pct { display: none; }
+}
+@container (max-width: 96px) or (max-height: 96px) {
+  .heat-price { display: none; }
+}
