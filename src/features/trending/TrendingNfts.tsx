@@ -1,9 +1,7 @@
-import { ENDPOINTS } from "@/lib/endpoints";
-import { safeFetch } from "@/lib/fetcher";
-import { TrendingResponse } from "@/types/api";
+import { getTrending } from "@/server/data/trending";
 
 export const TrendingNFTs = async () => {
-  const trending = await safeFetch<TrendingResponse>(ENDPOINTS.trending);
+  const trending = await getTrending();
   // Non-critical section: hide it entirely if the fetch fails.
   if (!trending) return null;
 

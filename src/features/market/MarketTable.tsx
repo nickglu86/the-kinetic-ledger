@@ -1,13 +1,13 @@
 import Link from "next/link";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { safeFetch } from "@/lib/fetcher";
+import { getMarketsData } from "@/server/data/markets";
 import { formatMarketCap, formatPrice } from "@/lib/formats";
 import { ICoin } from "@/types/api";
 import { PercentChange } from "@/components/ui/PercentChange";
 import { Unavailable } from "@/components/ui/Unavailable";
 
 export const MarketTable = async () => {
-  const coins = await safeFetch<ICoin[]>(ENDPOINTS.coinsMarket(100));
+  // Top 10 of the shared market list (same cached call as the ticker and the Markets page).
+  const coins = (await getMarketsData())?.coins;
 
   const Coin = ({coin}:{ coin: ICoin}) => {
     

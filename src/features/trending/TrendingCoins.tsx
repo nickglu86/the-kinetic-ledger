@@ -1,13 +1,11 @@
 import Link from "next/link";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { safeFetch } from "@/lib/fetcher";
+import { getTrending } from "@/server/data/trending";
 import { formatPrice } from "@/lib/formats";
-import { TrendingResponse } from "@/types/api";
 import { PercentChange } from "@/components/ui/PercentChange";
 import { Unavailable } from "@/components/ui/Unavailable";
 
 export const TrendingCoins = async () => {
-    const trending = await safeFetch<TrendingResponse>(ENDPOINTS.trending);
+    const trending = await getTrending();
     if (!trending) return <Unavailable label="Trending" className="bg-surface-container-high p-6" />;
 
     const { coins } = trending;

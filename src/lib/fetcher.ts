@@ -44,7 +44,8 @@ export const fetchData = async <T>(
   const start = Date.now();
   const response = await fetch(url, {
     headers: getHeaders(url),
-    next: { revalidate: revalidate ?? 60 },
+    // Callers pass a time from REVALIDATE (lib/cacheTimes.ts); 5 min is a safe fallback.
+    next: { revalidate: revalidate ?? 300 },
   });
 
   if (!response.ok) {
@@ -75,6 +76,6 @@ export const safeFetch = async <T>(
     return null;
   }
 };
-//   1. Call fetch(url, { next: { revalidate: revalidate ?? 60 } })
+//   1. Call fetch(url, { next: { revalidate: revalidate ?? 300 } })
 //   2. Check res.ok — if not, throw an error (include the URL and status in the message)
 //   3. Return res.json() cast as T

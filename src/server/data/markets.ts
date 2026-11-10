@@ -1,3 +1,5 @@
+import { cache } from "react";
+import { REVALIDATE } from "@/lib/cacheTimes";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { safeFetch } from "@/lib/fetcher";
 import type { ChartPoint } from "@/features/coin/types";
@@ -45,10 +47,17 @@ const buildMarketCapTrend = (coins: CoinWithSparkline[]): ChartPoint[] | null =>
   return recent.map((value, i) => ({ time: end - (recent.length - 1 - i) * HOUR, value }));
 };
 
+// The one /coins/markets call for the whole site: the ticker, the home table and metrics, and the
+// Markets page all read from it, so it costs one API call per refresh instead of three.
+// cache() parses the ~1 MB response once per render, even when several components ask for it.
+//
 // null on failure: the page shows an "unavailable" card instead of crashing.
 // (These pages are pre-rendered at build time, and a throw there would fail the whole build.)
-export const getMarketsData = async (): Promise<MarketsData | null> => {
-  const raw = await safeFetch<CoinWithSparkline[]>(ENDPOINTS.coinsMarket(MARKETS_COIN_COUNT, true), 60);
+export const getMarketsData = cache(async (): Promise<MarketsData | null> => {
+  const raw = await safeFetch<CoinWithSparkline[]>(
+    ENDPOINTS.coinsMarket(MARKETS_COIN_COUNT, true),
+    REVALIDATE.marketList,
+  );
   if (!raw) return null;
 
   return {
@@ -57,4 +66,4 @@ export const getMarketsData = async (): Promise<MarketsData | null> => {
     // eslint-disable-next-line @typescript-eslint/no-unused-vars -- destructured only to leave it out
     coins: raw.map(({ sparkline_in_7d, ...coin }) => coin),
   };
-};
+});

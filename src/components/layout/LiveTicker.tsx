@@ -1,6 +1,5 @@
 import Link from "next/link";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { safeFetch } from "@/lib/fetcher";
+import { getMarketsData } from "@/server/data/markets";
 import { ICoin } from "@/types/api";
 import { formatPrice } from "@/lib/formats";
 import { PercentChange } from "@/components/ui/PercentChange";
@@ -8,7 +7,8 @@ import { PercentChange } from "@/components/ui/PercentChange";
 const STABLE_COINS = ["usdt", "usdc", "usds"];
 
 export const LiveTicker = async () => {
-  const coins = await safeFetch<ICoin[]>(ENDPOINTS.coinsMarket(30));
+  // Top 30 of the shared market list: no extra API call for the ticker.
+  const coins = (await getMarketsData())?.coins.slice(0, 30);
   // Lives in the root layout, so a throw here would hit global-error. Just hide the ticker instead.
   if (!coins) return null;
 

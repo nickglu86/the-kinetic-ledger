@@ -1,4 +1,5 @@
 import { cache } from "react";
+import { REVALIDATE } from "@/lib/cacheTimes";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { FetchError, fetchData } from "@/lib/fetcher";
 import { ChartPoint, CoinChartData, CoinDetail } from "@/features/coin/types";
@@ -11,7 +12,7 @@ import { ChartDays } from "@/features/coin/chartRanges";
 // - cache() dedupes calls within one request, so generateMetadata and the page share a single fetch.
 export const getCoin = cache(async (id: string): Promise<CoinDetail | null> => {
   try {
-    return await fetchData<CoinDetail>(ENDPOINTS.coinDetail(id));
+    return await fetchData<CoinDetail>(ENDPOINTS.coinDetail(id), REVALIDATE.coinDetail);
   } catch (error) {
     if (error instanceof FetchError && error.status === 404) return null;
     throw error;
@@ -25,7 +26,7 @@ interface MarketChartResponse {
 }
 
 // Short ranges move fast; a year of daily candles barely changes. Saves API quota.
-const CHART_REVALIDATE: Record<ChartDays, number> = { 1: 60, 7: 300, 30: 900, 90: 3600, 365: 3600 };
+const CHART_REVALIDATE: Record<ChartDays, number> = { 1: 300, 7: 900, 30: 1800, 90: 3600, 365: 21600 };
 
 // ms -> seconds, and drop points that would break the chart: it needs strictly increasing times.
 const toChartPoints = (rows: [number, number][]): ChartPoint[] => {

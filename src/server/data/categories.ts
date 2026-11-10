@@ -1,12 +1,18 @@
+import { cache } from "react";
+import { REVALIDATE } from "@/lib/cacheTimes";
 import { ENDPOINTS } from "@/lib/endpoints";
 import { safeFetch } from "@/lib/fetcher";
 import type { MarketCategory, RankedSector } from "@/features/rankings/types";
+
+// All CoinGecko categories (~780). Shared by the home Trending Sectors strip and the Rankings page,
+// so both read one cached response. null on failure.
+export const getCategories = cache(() => safeFetch<MarketCategory[]>(ENDPOINTS.categories, REVALIDATE.categories));
 
 // Sectors (CoinGecko "categories") ranked by market cap.
 // About half of CoinGecko's ~780 categories have no market cap yet; those are dropped.
 // The rank is computed once here, so it stays the same when the table is re-sorted by another column.
 export const getRankedSectors = async (): Promise<RankedSector[] | null> => {
-  const categories = await safeFetch<MarketCategory[]>(ENDPOINTS.categories, 300);
+  const categories = await getCategories();
   if (!categories) return null;
 
   return categories

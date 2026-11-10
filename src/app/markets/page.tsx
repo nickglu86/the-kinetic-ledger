@@ -4,9 +4,7 @@ import { MarketHighlights } from "@/features/market/MarketHighlights";
 import { MarketsHeader } from "@/features/market/MarketsHeader";
 import { PercentChange } from "@/components/ui/PercentChange";
 import { Unavailable } from "@/components/ui/Unavailable";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { safeFetch } from "@/lib/fetcher";
-import type { GlobalResponse } from "@/types/api";
+import { getGlobal } from "@/server/data/global";
 import { getMarketsData, MARKETS_COIN_COUNT } from "@/server/data/markets";
 
 export const metadata: Metadata = {
@@ -17,8 +15,7 @@ export const metadata: Metadata = {
 // Server Component: fetches everything once (cached ~60s). The client table then handles
 // search, sorting and paging in the browser without more API calls.
 export default async function MarketsPage() {
-  const [markets, globalRes] = await Promise.all([getMarketsData(), safeFetch<GlobalResponse>(ENDPOINTS.global)]);
-  const global = globalRes?.data ?? null;
+  const [markets, global] = await Promise.all([getMarketsData(), getGlobal()]);
 
   const description = global ? (
     <p>

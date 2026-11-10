@@ -1,9 +1,7 @@
-import { safeFetch } from "@/lib/fetcher";
-import { ENDPOINTS } from "@/lib/endpoints";
 import { formatMarketCap } from "@/lib/formats";
 import { getHalvingData } from "@/lib/utils";
+import { getFearAndGreed, getGlobal } from "@/server/data/global";
 import { getMarketsData } from "@/server/data/markets";
-import { FearAndGreedResponse, GlobalResponse } from "@/types/api";
 import { ChangePill } from "@/components/ui/ChangePill";
 import { Unavailable } from "@/components/ui/Unavailable";
 import { FearGreedGauge, sentimentColor } from "./FearGreedGauge";
@@ -34,14 +32,7 @@ const LegendRow = ({ color, label, value, muted }: { color: string; label: strin
 export const GlobalMetrics = async () => {
   // Fetched in parallel; each one can fail on its own and only its card shows "unavailable".
   // getMarketsData is the same request the Markets page makes, so they share one cache entry.
-  const [globalRes, fearAndGreedRes, markets] = await Promise.all([
-    safeFetch<GlobalResponse>(ENDPOINTS.global),
-    safeFetch<FearAndGreedResponse>(ENDPOINTS.fearAndGreed),
-    getMarketsData(),
-  ]);
-
-  const global = globalRes?.data ?? null;
-  const fng = fearAndGreedRes?.data ?? [];
+  const [global, fng, markets] = await Promise.all([getGlobal(), getFearAndGreed(), getMarketsData()]);
   const { daysLeft, progressPercent } = getHalvingData();
 
   const btc = global?.market_cap_percentage.btc ?? 0;

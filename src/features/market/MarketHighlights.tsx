@@ -1,10 +1,9 @@
 import Link from "next/link";
-import { ENDPOINTS } from "@/lib/endpoints";
-import { safeFetch } from "@/lib/fetcher";
+import { getTrending } from "@/server/data/trending";
 import { formatMarketCap, formatPrice } from "@/lib/formats";
 import { PercentChange } from "@/components/ui/PercentChange";
 import { Unavailable } from "@/components/ui/Unavailable";
-import type { GlobalData, TrendingResponse } from "@/types/api";
+import type { GlobalData } from "@/types/api";
 import type { ChartPoint } from "@/features/coin/types";
 import { MarketCapChart } from "./MarketCapChart";
 import type { MarketCoin } from "./types";
@@ -61,7 +60,7 @@ interface MarketHighlightsProps {
 }
 
 export const MarketHighlights = async ({ coins, marketCapTrend, global }: MarketHighlightsProps) => {
-  const trending = await safeFetch<TrendingResponse>(ENDPOINTS.trending);
+  const trending = await getTrending();
 
   const trendingCoins: ListCoin[] = (trending?.coins ?? []).slice(0, LIST_SIZE).map(({ item }) => ({
     id: item.id,
