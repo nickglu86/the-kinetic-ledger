@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { isNavActive } from "@/lib/constants";
 
 const MOBILE_NAV_ITEMS = [
     { label: "Pulse", href: "/", icon: "show_chart" },
@@ -20,7 +21,7 @@ export const MobileNav = () => {
             aria-label="Main"
             className="md:hidden fixed bottom-0 left-0 w-full flex justify-around items-center px-4 pb-6 pt-2 bg-[#0b0e11]/80 backdrop-blur-xl border-t border-[#1c2024] z-50 rounded-t-lg">
             {MOBILE_NAV_ITEMS.map((item) => {
-                const active = pathname === item.href;
+                const active = isNavActive(item.href, pathname);
                 return (
                     <Link
                         key={item.href}

@@ -1,9 +1,10 @@
-import { Bone, PageHeaderSkeleton, Skeleton, TableSkeleton } from "@/components/ui/Skeleton";
+import { Bone, MarketsNavSkeleton, PageHeaderSkeleton, Skeleton, TableSkeleton } from "@/components/ui/Skeleton";
 
 // Shown while the Markets page fetches 250 coins + global data. Mirrors the page layout.
 export default function MarketsLoading() {
   return (
     <Skeleton as="main" label="Loading markets" className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 space-y-8">
+      <MarketsNavSkeleton />
       <PageHeaderSkeleton />
 
       {/* Highlights: market cap card, Trending, Top Gainers */}

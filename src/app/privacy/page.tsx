@@ -21,11 +21,11 @@ const sections = [
   },
   {
     title: "Market data is fetched by our server",
-    body: "Prices, charts, trending coins and the Fear & Greed index come from CoinGecko and Alternative.me. Our server makes those requests, so your browser doesn't contact them directly. Search works the same way: what you type is sent only to this site's own search endpoint.",
+    body: "Prices, charts, exchanges, derivatives, trending coins and the Fear & Greed index come from CoinGecko and Alternative.me, and DeFi data from DefiLlama. Our server makes those requests, so your browser doesn't contact them directly. Search works the same way: what you type is sent only to this site's own search endpoint.",
   },
   {
     title: "Images and videos come from their providers",
-    body: "Coin logos and news thumbnails load from the providers' image servers (CoinGecko, CoinDesk, CoinTelegraph, Decrypt), which can see your IP address like any website. Videos play through YouTube's privacy-enhanced mode (youtube-nocookie.com), and only after you press play.",
+    body: "Coin, exchange and protocol logos and news thumbnails load from the providers' image servers (CoinGecko, DefiLlama, CoinDesk, CoinTelegraph, Decrypt), which can see your IP address like any website. Videos play through YouTube's privacy-enhanced mode (youtube-nocookie.com), and only after you press play.",
   },
   {
     title: "Links to other sites",

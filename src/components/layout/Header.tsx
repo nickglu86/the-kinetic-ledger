@@ -4,7 +4,7 @@ import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
 import { cn } from "@/lib/utils";
-import { NAV_ITEMS } from "@/lib/constants";
+import { isNavActive, NAV_ITEMS } from "@/lib/constants";
 import { CoinSearch } from "@/features/search/CoinSearch";
 import { WatchlistLink } from "@/features/watchlist/WatchlistLink";
 
@@ -24,9 +24,10 @@ export const Header = () => {
             <Link
               key={item.href}
               href={item.href}
+              aria-current={isNavActive(item.href, pathname) ? "page" : undefined}
               className={cn(
                 "font-headline tracking-tight text-sm transition-colors",
-                pathname === item.href
+                isNavActive(item.href, pathname)
                   ? "text-primary border-b-2 border-primary pb-1 font-bold"
                   : "text-on-surface/70 font-medium hover:text-primary",
               )}

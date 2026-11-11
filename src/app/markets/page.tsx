@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { CoinsTable } from "@/features/market/CoinsTable";
 import { MarketHighlights } from "@/features/market/MarketHighlights";
 import { MarketsHeader } from "@/features/market/MarketsHeader";
+import { MarketsNav } from "@/features/market/MarketsNav";
 import { PercentChange } from "@/components/ui/PercentChange";
 import { Unavailable } from "@/components/ui/Unavailable";
 import { getGlobal } from "@/server/data/global";
@@ -29,6 +30,7 @@ export default async function MarketsPage() {
 
   return (
     <main className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 space-y-8">
+      <MarketsNav />
       <MarketsHeader description={description}>
         <MarketHighlights
           coins={markets?.coins ?? []}

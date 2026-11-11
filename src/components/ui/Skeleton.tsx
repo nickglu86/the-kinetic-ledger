@@ -68,3 +68,25 @@ export const TableSkeleton = ({ rows, withSearch = true }: { rows: number; withS
     </div>
   </div>
 );
+
+/** Same size as <MarketsNav>: a row of tab pills. */
+export const MarketsNavSkeleton = () => (
+  <div className="flex gap-1 h-8 overflow-hidden">
+    {Array.from({ length: 5 }, (_, i) => (
+      <Bone key={i} className="h-8 w-24 shrink-0 rounded-lg bg-surface-container-low" />
+    ))}
+  </div>
+);
+
+/** A row of <StatCard>s. */
+export const StatCardsSkeleton = ({ count = 4 }: { count?: number }) => (
+  <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+    {Array.from({ length: count }, (_, i) => (
+      <div key={i} className="h-[106px] bg-surface-container-low p-4 rounded-xl space-y-3">
+        <Bone className="h-2.5 w-24" />
+        <Bone className="h-6 w-28" />
+        <Bone className="h-3 w-20" />
+      </div>
+    ))}
+  </div>
+);

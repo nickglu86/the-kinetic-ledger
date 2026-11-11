@@ -16,6 +16,8 @@ export interface CoinDetail {
     // Plain text for most coins, but some descriptions contain HTML (<a> tags). Never render it as HTML.
     description: { en?: string }
     links: CoinLinks
+    // Up to 100 trading pairs (tickers=true in the request). Used by "Where to trade".
+    tickers?: CoinTicker[]
     market_data: {
         current_price: ByCurrency
         market_cap: ByCurrency
@@ -63,4 +65,17 @@ export interface ChartPoint {
 export interface CoinChartData {
     prices: ChartPoint[]
     volumes: ChartPoint[]
+}
+
+// One trading pair from /coins/{id}?tickers=true (only the fields we use)
+export interface CoinTicker {
+    base: string
+    target: string
+    market: { name: string; identifier: string }
+    converted_last: ByCurrency
+    converted_volume: ByCurrency
+    bid_ask_spread_percentage: number | null
+    is_anomaly: boolean
+    is_stale: boolean
+    trade_url: string | null
 }

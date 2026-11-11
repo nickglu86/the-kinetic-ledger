@@ -1,6 +1,5 @@
 "use client";
 
-import Link from "next/link";
 import { useState, type ReactNode } from "react";
 import { PageHeader } from "@/components/ui/PageHeader";
 import { cn } from "@/lib/utils";
@@ -19,13 +18,6 @@ export const MarketsHeader = ({ description, children }: MarketsHeaderProps) => 
     <>
       <PageHeader eyebrow="Live prices" title="Markets" description={description}>
         <div className="flex items-center gap-6 self-start md:self-auto">
-        <Link
-          href="/heatmap"
-          className="inline-flex items-center gap-1.5 font-label text-[11px] font-bold uppercase tracking-widest text-secondary hover:underline"
-        >
-          <span aria-hidden className="material-symbols-outlined text-base">grid_view</span>
-          Heatmap
-        </Link>
         <button
           type="button"
           role="switch"

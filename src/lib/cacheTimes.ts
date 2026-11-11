@@ -10,8 +10,12 @@
 //   trending     1800 s  →  1,440
 //   categories   3600 s  →    720
 //   coin list      6 h   →    120   (header search + lets unknown coin URLs 404 without an API call)
+//   exchanges      1 h   →    720   (Exchanges page + "Where to trade" on coin pages)
+//   derivatives   30 min →  1,440   (perpetuals list, ~11 MB, summarised before caching)
+//   deriv. exch.   1 h   →    720
 //                          ───────
-//                          ~28,000 calls/month at most, plus coin pages (each real coin only when visited).
+//                          ~31,000 calls/month at most, plus coin pages (each real coin only when visited).
+//                          A coin page's trading pairs come in the same call as its details: no extra cost.
 //
 // Real traffic is far lower than "every few minutes, all day", but if the dashboard on
 // coingecko.com/en/developers/dashboard gets close to the limit, raise marketList first.
@@ -23,7 +27,11 @@ export const REVALIDATE = {
   categories: 3600,
   coinDetail: 300,
   coinList: 21600, // a coin listed today may 404 (and be missing from search) for up to 6 h
+  exchanges: 3600,
+  derivatives: 1800,
+  derivativesExchanges: 3600,
 
   // Other sources (not CoinGecko, no shared monthly limit)
   fearAndGreed: 3600, // updated once a day
+  defi: 1800, // DefiLlama: TVL, DEX volume and stablecoins refresh roughly hourly on their side
 } as const;

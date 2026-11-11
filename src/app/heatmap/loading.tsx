@@ -1,9 +1,10 @@
-import { Bone, PageHeaderSkeleton, Skeleton } from "@/components/ui/Skeleton";
+import { Bone, MarketsNavSkeleton, PageHeaderSkeleton, Skeleton } from "@/components/ui/Skeleton";
 
 // Shown while the Heatmap page loads the market list. Mirrors the page layout.
 export default function HeatmapLoading() {
   return (
     <Skeleton as="main" label="Loading heatmap" className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 space-y-8">
+      <MarketsNavSkeleton />
       <PageHeaderSkeleton />
       <div className="space-y-4">
         <div className="flex justify-between gap-3">

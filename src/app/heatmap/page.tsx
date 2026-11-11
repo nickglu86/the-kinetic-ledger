@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { PageHeader } from "@/components/ui/PageHeader";
+import { MarketsNav } from "@/features/market/MarketsNav";
 import { Unavailable } from "@/components/ui/Unavailable";
 import { HeatmapView } from "@/features/heatmap/HeatmapView";
 import { getMarketsData } from "@/server/data/markets";
@@ -18,6 +19,7 @@ export default async function HeatmapPage() {
 
   return (
     <main className="max-w-screen-2xl mx-auto px-2 md:px-8 py-6 space-y-8">
+      <MarketsNav />
       <PageHeader
         eyebrow="Market overview"
         title="Heatmap"

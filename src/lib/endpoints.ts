@@ -11,8 +11,22 @@ export const ENDPOINTS = {
     // Every coin's id, symbol and name (~22,800 coins, ~1.5 MB). Used to reject unknown coin URLs.
     coinsList: `${COINGECKO_BASE_URL}/coins/list`,
     // id comes from the page URL, so encode it. The =false flags drop large unused parts of the response.
+    // tickers=true adds up to 100 trading pairs (~60 KB) for the "Where to trade" list, in the same call.
     coinDetail: (id: string) =>
-        `${COINGECKO_BASE_URL}/coins/${encodeURIComponent(id)}?localization=false&tickers=false&community_data=false&developer_data=false&sparkline=false`,
+        `${COINGECKO_BASE_URL}/coins/${encodeURIComponent(id)}?localization=false&tickers=true&community_data=false&developer_data=false&sparkline=false`,
+    // Spot exchanges ranked by CoinGecko trust score (1-10), with 24h volume in BTC
+    exchanges: `${COINGECKO_BASE_URL}/exchanges?per_page=100&page=1`,
+    // Every derivatives contract on every exchange (~28,000 rows, ~11 MB). Summarised before caching.
+    derivatives: `${COINGECKO_BASE_URL}/derivatives`,
+    derivativesExchanges: `${COINGECKO_BASE_URL}/derivatives/exchanges?order=open_interest_btc_desc&per_page=30`,
+    // DefiLlama: free, no key
+    defi: {
+        chains: "https://api.llama.fi/v2/chains", // TVL per chain (~60 KB)
+        tvlHistory: "https://api.llama.fi/v2/historicalChainTvl", // total DeFi TVL per day (~120 KB)
+        protocols: "https://api.llama.fi/protocols", // every protocol (~9 MB), summarised before caching
+        dexs: "https://api.llama.fi/overview/dexs?excludeTotalDataChart=true&excludeTotalDataChartBreakdown=true", // ~2.4 MB
+        stablecoins: "https://stablecoins.llama.fi/stablecoins?includePrices=true", // ~550 KB
+    },
     // Price + volume history. Granularity is automatic: 5-min for 1 day, hourly up to 90 days, daily beyond.
     // The free Demo key only allows days <= 365.
     coinMarketChart: (id: string, days: number) =>

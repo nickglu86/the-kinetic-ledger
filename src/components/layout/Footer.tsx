@@ -4,6 +4,9 @@ import { REVALIDATE } from "@/lib/cacheTimes";
 const EXPLORE = [
   { label: "Markets", href: "/markets" },
   { label: "Heatmap", href: "/heatmap" },
+  { label: "Exchanges", href: "/exchanges" },
+  { label: "Derivatives", href: "/derivatives" },
+  { label: "DeFi", href: "/defi" },
   { label: "Rankings", href: "/rankings" },
   { label: "News", href: "/news" },
   { label: "Videos", href: "/videos" },
@@ -12,6 +15,7 @@ const EXPLORE = [
 
 const SOURCES = [
   { label: "CoinGecko", href: "https://www.coingecko.com" },
+  { label: "DefiLlama", href: "https://defillama.com" },
   { label: "Alternative.me (Fear & Greed)", href: "https://alternative.me/crypto/fear-and-greed-index/" },
   { label: "CoinDesk", href: "https://www.coindesk.com" },
   { label: "CoinTelegraph", href: "https://cointelegraph.com" },
@@ -26,6 +30,8 @@ const FRESHNESS = [
   { label: "Prices", value: every(REVALIDATE.marketList) },
   { label: "News", value: every(300) }, // RSS feeds, see lib/rss.ts
   { label: "Trending", value: every(REVALIDATE.trending) },
+  { label: "Derivatives", value: every(REVALIDATE.derivatives) },
+  { label: "DeFi", value: every(REVALIDATE.defi) },
   { label: "Fear & Greed", value: every(REVALIDATE.fearAndGreed) },
 ];
 
